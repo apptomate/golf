@@ -14,3 +14,10 @@ export function dateFormat(date, format) {
         return '';
     }
 }
+
+//Logged User Details
+export function loggedUserDetails() {
+    let sessionData = localStorage.getItem('loggedUser');
+    sessionData = JSON.parse(sessionData) || {};
+    return sessionData;
+}

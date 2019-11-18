@@ -95,7 +95,6 @@ class Teams extends Component {
     }
     render() {
         const { expanded } = this.state;
-        console.log('Ex:', expanded);
         const
             {
                 TeamsResponse: { data = [], loading = '' }

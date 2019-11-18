@@ -12,6 +12,7 @@ import { style } from "../variables/Variables.jsx";
 import routes from "../routes";
 
 import image from "../assets/img/sidebar-3.jpg";
+// import { loggedUserDetails } from "../_helpers/Functions";
 
 class Admin extends Component {
   constructor(props) {
@@ -151,6 +152,8 @@ class Admin extends Component {
     }
   }
   render() {
+    // const { email } = loggedUserDetails();
+    // if (email) this.props.history.push('/login');
     return (
       <div className="wrapper">
         <NotificationSystem ref="notificationSystem" style={style} />

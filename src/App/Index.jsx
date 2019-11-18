@@ -4,9 +4,13 @@ import AdminLayout from "../layouts/Admin";
 import Login from "../LoginPage/Index";
 import configureStore from '../_store/ConfigureStore';
 import { Provider } from "react-redux";
+import { ProtectedRoute } from '../components/ProtectedRoute/Index';
 
 const store = configureStore();
 export default class App extends Component {
+    constructor(props) {
+        super(props);
+    }
     render() {
         return (
             <Provider store={store}>

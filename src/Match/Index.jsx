@@ -53,7 +53,7 @@ class Teams extends Component {
             {
                 MatchResponse: { data = [], loading = '' }
             } = this.props;
-        const MyLoader = () => loading ? <Loader /> : ''; console.log(data)
+        const MyLoader = () => loading ? <Loader /> : '';
         return (
             <div className="content">
                 <Grid fluid>

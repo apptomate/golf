@@ -6,6 +6,7 @@ import {
     ALLTEAMS_ERROR, ALLTEAMS_LOADING, ALLTEAMS_SUCCESS,
     ALLMATCHES_ERROR, ALLMATCHES_LOADING, ALLMATCHES_SUCCESS,
 } from './ActionTypes';
+import { handleResponse } from '../_helpers/HandleResponse';
 
 //Users
 //Get All Users
@@ -21,14 +22,15 @@ export function getAllUsers() {
                     payload: response.data
                 });
             })
-            .catch(function (error) {
+            .catch(error => {
                 if (error.response) {
+                    handleResponse(error.response);
                     dispatch({
                         type: ALLUSERS_ERROR,
                         payload: error.response
                     });
                 }
-            });
+            })
     };
 }
 
@@ -48,6 +50,7 @@ export function getAllTeams() {
             })
             .catch(function (error) {
                 if (error.response) {
+                    handleResponse(error.response);
                     dispatch({
                         type: ALLTEAMS_ERROR,
                         payload: error.response
@@ -73,6 +76,7 @@ export function getAllMatches() {
             })
             .catch(function (error) {
                 if (error.response) {
+                    handleResponse(error.response);
                     dispatch({
                         type: ALLMATCHES_ERROR,
                         payload: error.response

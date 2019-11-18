@@ -6,7 +6,8 @@ import { AuthenticationService } from '../_services/AuthenticationService';
 import { LOGIN_URL } from '../_helpers/Constants';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
-import { getAlertMessage } from '../_helpers/Functions';
+import { getAlertMessage, loggedUserDetails } from '../_helpers/Functions';
+
 export default class Login extends Component {
   constructor(props) {
     super(props);
@@ -27,8 +28,12 @@ export default class Login extends Component {
     };
     Axios.post(LOGIN_URL, formData)
       .then(response => {
-        const { token } = response.data;
+        const { token, user: { email } } = response.data;
+        let loginData = {
+          email: email
+        };
         localStorage.setItem('authToken', token);
+        localStorage.setItem('loggedUser', JSON.stringify(loginData));
         Swal.fire(getAlertMessage('success', 'Login Success'));
         this.setState({ isLoggedIn: true });
       })
@@ -45,9 +50,10 @@ export default class Login extends Component {
     this.setState({ [name]: value });
   }
   render() {
+    const { email: loggedEmail = '' } = loggedUserDetails();
     const { email, password } = this.state;
     // Redirect After Login Success
-    if (this.state.isLoggedIn) {
+    if (this.state.isLoggedIn || loggedEmail) {
       return <Redirect to={{ pathname: "/" }} />;
     }
     return (
