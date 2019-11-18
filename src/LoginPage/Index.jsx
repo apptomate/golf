@@ -1,0 +1,79 @@
+import React, { Component } from 'react';
+import { Redirect } from "react-router-dom";
+import { Row, Col, Button, FormGroup } from 'reactstrap';
+import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { AuthenticationService } from '../_services/AuthenticationService';
+import { LOGIN_URL } from '../_helpers/Constants';
+import Axios from 'axios';
+import Swal from 'sweetalert2';
+import { getAlertMessage } from '../_helpers/Functions';
+export default class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: '',
+      userTypeid: 1,
+      isLoggedIn: false
+    }
+    this.handleValidation = this.handleValidation.bind(this);
+    this.handleFieldChange = this.handleFieldChange.bind(this);
+  }
+  //Login Validation
+  handleValidation = () => {
+    const { email, password, userTypeid } = this.state;
+    const formData = {
+      email, password, userTypeid
+    };
+    Axios.post(LOGIN_URL, formData)
+      .then(response => {
+        const { token } = response.data;
+        localStorage.setItem('authToken', token);
+        Swal.fire(getAlertMessage('success', 'Login Success'));
+        this.setState({ isLoggedIn: true });
+      })
+      .catch(function (error) {
+        if (error.response) {
+          const { errorMessage } = error.response.data;
+          Swal.fire(getAlertMessage('error', errorMessage));
+        }
+      });
+  }
+  //Field Change
+  handleFieldChange = (e) => {
+    const { name, value } = e.target;
+    this.setState({ [name]: value });
+  }
+  render() {
+    const { email, password } = this.state;
+    // Redirect After Login Success
+    if (this.state.isLoggedIn) {
+      return <Redirect to={{ pathname: "/" }} />;
+    }
+    return (
+      <div className="login-bg">
+        <Row>
+          <Col md="8" />
+          <Col className="login-form-center" md="4">
+            <Row>
+              <Col md="12">
+                <AvForm className="bg-white login-form-space" onValidSubmit={this.handleValidation}>
+                  <h3 className="login-title">Login</h3>
+                  <FormGroup>
+                    <AvField name="email" label="Email" type="email" required onChange={this.handleFieldChange} value={email} />
+                  </FormGroup>
+                  <br />
+                  <FormGroup>
+                    <AvField name="password" label="Password" type="password" required onChange={this.handleFieldChange} value={password} />
+                  </FormGroup>
+                  <br />
+                  <center> <Button color="primary">Login</Button></center>
+                </AvForm>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </div>
+    );
+  }
+}

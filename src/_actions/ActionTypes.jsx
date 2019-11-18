@@ -1,0 +1,18 @@
+//Users
+
+//Get All Users
+export const ALLUSERS_LOADING = 'ALLUSERS_LOADING';
+export const ALLUSERS_SUCCESS = 'ALLUSERS_SUCCESS';
+export const ALLUSERS_ERROR = 'ALLUSERS_ERROR';
+
+//Teams
+//Get All Teams
+export const ALLTEAMS_LOADING = 'ALLTEAMS_LOADING';
+export const ALLTEAMS_SUCCESS = 'ALLTEAMS_SUCCESS';
+export const ALLTEAMS_ERROR = 'ALLTEAMS_ERROR';
+
+//Match
+//Get All Matches
+export const ALLMATCHES_LOADING = 'ALLMATCHES_LOADING';
+export const ALLMATCHES_SUCCESS = 'ALLMATCHES_SUCCESS';
+export const ALLMATCHES_ERROR = 'ALLMATCHES_ERROR';
