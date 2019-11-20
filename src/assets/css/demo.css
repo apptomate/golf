@@ -787,8 +787,8 @@
   }
 
   .login-form-space {
-    width: 500px;
-    padding: 5rem;
+    width: 100%;
+    padding: 1rem;
 }
 .login-title {
   text-align: center;
@@ -799,6 +799,14 @@
   width: 40px;
   height: 40px;
 }
+
+
+/* Custom Added Style */
 .loading-inner{
   position: initial !important; 
+}
+.add-user-style{
+  float: right;
+  margin-top: -1rem;
+  margin-right: 3rem;
 }

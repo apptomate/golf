@@ -316,7 +316,7 @@ const iconsArray = [
   "pe-7s-wine",
   "pe-7s-cloud-upload",
   "pe-7s-cash",
-  "pe-7s-close",
+  "pe-7s-close",//important
   "pe-7s-bluetooth",
   "pe-7s-cloud-download",
   "pe-7s-way",
@@ -348,7 +348,7 @@ const iconsArray = [
   "pe-7s-upload",
   "pe-7s-unlock",
   "pe-7s-umbrella",
-  "pe-7s-trash",
+  "pe-7s-trash",//important
   "pe-7s-tools",
   "pe-7s-timer",
   "pe-7s-ticket",
@@ -540,7 +540,7 @@ var responsiveSales = [
     "screen and (max-width: 640px)",
     {
       axisX: {
-        labelInterpolationFnc: function(value) {
+        labelInterpolationFnc: function (value) {
           return value[0];
         }
       }
@@ -586,7 +586,7 @@ var responsiveBar = [
     {
       seriesBarDistance: 5,
       axisX: {
-        labelInterpolationFnc: function(value) {
+        labelInterpolationFnc: function (value) {
           return value[0];
         }
       }

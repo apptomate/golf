@@ -1,4 +1,6 @@
 import moment from 'moment';
+import React from 'react';
+import { FormGroup, ControlLabel, FormControl, HelpBlock } from "react-bootstrap";
 
 //Alert Message
 export const getAlertMessage = (icon, text) => ({
@@ -20,4 +22,15 @@ export function loggedUserDetails() {
     let sessionData = localStorage.getItem('loggedUser');
     sessionData = JSON.parse(sessionData) || {};
     return sessionData;
+}
+
+//Custom Form Fields
+export function FieldGroup({ id, label, help, ...props }) {
+    return (
+        <FormGroup controlId={id}>
+            <ControlLabel>{label}</ControlLabel>
+            <FormControl {...props} />
+            {help && <HelpBlock>{help}</HelpBlock>}
+        </FormGroup>
+    );
 }

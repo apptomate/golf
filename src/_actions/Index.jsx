@@ -1,10 +1,18 @@
 import Axios from 'axios';
-import { ALLUSERS_URL, ALLTEAMS_URL, ALLMATCHES_URL } from '../_helpers/Constants';
+import {
+    ALLUSERS_URL, ALLTEAMS_URL, ALLMATCHES_URL, ALLCOUNTRIES_URL,
+    COUNTRYSTATES_URL, REMOVEUSER_URL, ALLUSERTYPES_URL, ADDUSER_URL
+} from '../_helpers/Constants';
 import { authHeader } from '../_helpers/AuthHeaders';
 import {
     ALLUSERS_LOADING, ALLUSERS_SUCCESS, ALLUSERS_ERROR,
     ALLTEAMS_ERROR, ALLTEAMS_LOADING, ALLTEAMS_SUCCESS,
     ALLMATCHES_ERROR, ALLMATCHES_LOADING, ALLMATCHES_SUCCESS,
+    ALLCOUNTRIES_SUCCESS, ALLCOUNTRIES_ERROR,
+    COUNTRYSTATES_SUCCESS, COUNTRYSTATES_ERROR,
+    REMOVEUSER_SUCCESS, REMOVEUSER_ERROR,
+    ALLUSERTYPES_SUCCESS, ALLUSERTYPES_ERROR,
+    ADDUSER_SUCCESS, ADDUSER_ERROR
 } from './ActionTypes';
 import { handleResponse } from '../_helpers/HandleResponse';
 
@@ -33,6 +41,78 @@ export function getAllUsers() {
             })
     };
 }
+//Get All User Types
+export function getAllUserTypes() {
+    return dispatch => {
+        Axios.get(ALLUSERTYPES_URL, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ALLUSERTYPES_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: ALLUSERTYPES_ERROR,
+                        payload: error.response
+                    });
+                }
+            })
+    };
+}
+//Get All Users
+export function addUser(formData) {
+    return dispatch => {
+        dispatch({
+            type: ALLUSERS_LOADING
+        });
+        Axios.post(ADDUSER_URL, formData, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ADDUSER_SUCCESS,
+                    payload: response.data
+                });
+                dispatch(getAllUsers());
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: ADDUSER_ERROR,
+                        payload: error.response.data
+                    });
+                }
+            })
+    };
+}
+//Remove User
+export function removeUser(userId) {
+    return dispatch => {
+        dispatch({
+            type: ALLUSERS_LOADING
+        });
+        Axios.delete(REMOVEUSER_URL + '/' + userId, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: REMOVEUSER_SUCCESS,
+                    payload: response.data
+                });
+                dispatch(getAllUsers());
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: REMOVEUSER_ERROR,
+                        payload: error.response
+                    });
+                }
+            })
+    };
+}
+
 
 //Teams
 //Get All Teams
@@ -85,5 +165,51 @@ export function getAllMatches() {
             });
     };
 }
+
+//Get All Countries
+export function getAllCountries() {
+    return dispatch => {
+        Axios.get(ALLCOUNTRIES_URL, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ALLCOUNTRIES_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: ALLCOUNTRIES_ERROR,
+                        payload: error.response
+                    });
+                }
+            })
+    };
+}
+//Get States List
+export function getCountryStates(countryId) {
+    return dispatch => {
+        Axios.get(COUNTRYSTATES_URL + '/' + countryId, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: COUNTRYSTATES_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: COUNTRYSTATES_ERROR,
+                        payload: error.response
+                    });
+                }
+            })
+    };
+}
+
+
+
 
 
