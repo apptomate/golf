@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from "react-router-dom";
+import { Redirect } from 'react-router-dom';
 import { Row, Col, Button, FormGroup } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { AuthenticationService } from '../_services/AuthenticationService';
@@ -16,7 +16,7 @@ export default class Login extends Component {
       password: '',
       userTypeid: 1,
       isLoggedIn: false
-    }
+    };
     this.handleValidation = this.handleValidation.bind(this);
     this.handleFieldChange = this.handleFieldChange.bind(this);
   }
@@ -24,11 +24,16 @@ export default class Login extends Component {
   handleValidation = () => {
     const { email, password, userTypeid } = this.state;
     const formData = {
-      email, password, userTypeid
+      email,
+      password,
+      userTypeid
     };
     Axios.post(LOGIN_URL, formData)
       .then(response => {
-        const { token, user: { email } } = response.data;
+        const {
+          token,
+          user: { email }
+        } = response.data;
         let loginData = {
           email: email
         };
@@ -37,47 +42,65 @@ export default class Login extends Component {
         Swal.fire(getAlertMessage('success', 'Login Success'));
         this.setState({ isLoggedIn: true });
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error.response) {
           const { errorMessage } = error.response.data;
           Swal.fire(getAlertMessage('error', errorMessage));
         }
       });
-  }
+  };
   //Field Change
-  handleFieldChange = (e) => {
+  handleFieldChange = e => {
     const { name, value } = e.target;
     this.setState({ [name]: value });
-  }
+  };
   render() {
     const { email: loggedEmail = '' } = loggedUserDetails();
     const { email, password } = this.state;
     // Redirect After Login Success
     if (this.state.isLoggedIn || loggedEmail) {
-      return <Redirect to={{ pathname: "/" }} />;
+      return <Redirect to={{ pathname: '/' }} />;
     }
     return (
-      <div className="login-bg">
+      <div className='login-bg'>
         <Row>
-          <Col md="8" />
-          <Col className="login-form-center" md="4">
-            <Row>
-              <Col md="12">
-                <AvForm className="bg-white login-form-space" onValidSubmit={this.handleValidation}>
-                  <h3 className="login-title">Login</h3>
-                  <FormGroup>
-                    <AvField name="email" label="Email" type="email" required onChange={this.handleFieldChange} value={email} />
-                  </FormGroup>
-                  <br />
-                  <FormGroup>
-                    <AvField name="password" label="Password" type="password" required onChange={this.handleFieldChange} value={password} />
-                  </FormGroup>
-                  <br />
-                  <center> <Button color="primary">Login</Button></center>
-                </AvForm>
-              </Col>
-            </Row>
+          <Col md='7' />
+          <Col className='login-form-center' md='3'>
+            <AvForm
+              className='bg-white login-form-space'
+              onValidSubmit={this.handleValidation}
+            >
+              <h3 className='login-title'>Login</h3>
+              <FormGroup>
+                <AvField
+                  name='email'
+                  label='Email'
+                  type='email'
+                  required
+                  onChange={this.handleFieldChange}
+                  value={email}
+                />
+              </FormGroup>
+              <br />
+              <FormGroup>
+                <AvField
+                  name='password'
+                  label='Password'
+                  type='password'
+                  required
+                  onChange={this.handleFieldChange}
+                  value={password}
+                />
+              </FormGroup>
+              <br />
+              <center>
+                <Button color='primary' size='md'>
+                  Login
+                </Button>
+              </center>
+            </AvForm>
           </Col>
+          <Col className='login-form-center' md='1'></Col>
         </Row>
       </div>
     );
