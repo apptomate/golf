@@ -1134,3 +1134,7 @@ body > .navbar-collapse:after {
   display: block;
   margin: auto;
 }
+
+.sidebar .nav i {
+  font-size: 14px !important;
+}

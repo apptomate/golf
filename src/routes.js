@@ -21,21 +21,21 @@ const dashboardRoutes = [
   {
     path: "/users",
     name: "Users",
-    icon: "pe-7s-user",
+    icon: "fas fa-user",
     component: Users,
     layout: "/admin"
   },
   {
     path: "/teams",
     name: "Teams",
-    icon: "pe-7s-users",
+    icon: "fas fa-users",
     component: Teams,
     layout: "/admin"
   },
   {
     path: "/match",
     name: "Match",
-    icon: "pe-7s-user",
+    icon: "fas fa-golf-ball",
     component: Match,
     layout: "/admin"
   }

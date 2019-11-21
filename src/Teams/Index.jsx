@@ -180,14 +180,24 @@ class Teams extends Component {
                     <Row>
                         <Col md={12}>
                             <Card
-                                title="Teams"
                                 ctTableFullWidth
                                 ctTableResponsive
                                 content={
                                     <Fragment>
-                                        <span className='add-user-style' >
-                                            <Button onClick={this.teamAddModal}><i className="fas fa-users" /></Button>
-                                        </span><br /><br />
+                                        <div className='title-bg'>
+                                            <span className='title-left'>
+                                                <h4>Teams</h4>
+                                            </span>
+                                            <span className='title-right'>
+                                                <Button
+                                                    className='cus-btn info'
+                                                    variant='outline-info'
+                                                    onClick={this.teamAddModal}
+                                                >
+                                                    <i className='fas fa-users' />
+                                                </Button>
+                                            </span>
+                                        </div>
                                         <ReactTable
                                             expanded={expanded}
                                             onPageChange={this.reset_expand_row}

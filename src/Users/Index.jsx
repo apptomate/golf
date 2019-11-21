@@ -82,37 +82,17 @@ class Users extends Component {
                 width: 130,
                 Cell: ({ row }) => (
                     <Fragment>
-                        <i
+                        {/* <i
                             data-user_id={row['_original'].userId}
                             onClick={e => this.userUpdateModal(e, row)}
                             className='fas fa-pencil-alt edit-icon'
-                        />
+                        /> */}
 
                         <i
                             data-user_id={row['_original'].userId}
                             onClick={this.removeUser}
                             className='fas fas fa-trash delete-icon'
                         />
-
-
-                        {/* <Button
-                            bsStyle="info"
-                            data-user_id={row['_original'].userId}
-                            onClick={e => this.userUpdateModal(e, row)}
-                            bsSize="small"
-                        ><i
-                                className="fas fa-pencil-alt"
-                            />
-                        </Button>{' '}
-                        <Button
-                            bsStyle="danger"
-                            data-user_id={row['_original'].userId}
-                            onClick={this.removeUser}
-                            bsSize="small"
-                        ><i
-                                className="fas fas fa-trash"
-                            />
-                        </Button> */}
                     </Fragment>
                 )
             }
@@ -297,12 +277,10 @@ class Users extends Component {
                     <Row>
                         <Col md={12}>
                             <Card
-
                                 ctTableFullWidth
                                 ctTableResponsive
                                 content={
                                     <Fragment>
-
                                         <div className='title-bg'>
                                             <span className='title-left'>
                                                 <h4>Users</h4>
@@ -317,7 +295,6 @@ class Users extends Component {
                                                 </Button>
                                             </span>
                                         </div>
-
                                         <ReactTable
                                             id="users_table"
                                             ref={r => (this.reactTable = r)}

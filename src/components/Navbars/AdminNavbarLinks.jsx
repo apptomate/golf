@@ -64,7 +64,7 @@ class AdminNavbarLinks extends Component {
           </NavDropdown> */}
           <NavItem className='login-name'>{email}</NavItem>
           <NavItem eventKey={3} onClick={this.logout}>
-            <i class='fas fa-sign-out-alt' style={{ fontSize: '13px' }}></i>
+            <i className='fas fa-sign-out-alt' style={{ fontSize: '13px' }} />
           </NavItem>
         </Nav>
       </div>

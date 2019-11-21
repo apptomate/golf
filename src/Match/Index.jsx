@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Grid, Row, Col } from "react-bootstrap";
 import Card from "../components/Card/Card.jsx";
 import ReactTable from 'react-table';
@@ -49,10 +49,11 @@ class Teams extends Component {
         this.props.getAllMatches();
     }
     render() {
-        const
+        let
             {
                 MatchResponse: { data = [], loading = '' }
             } = this.props;
+        if (typeof data !== 'array') data = [];
         const MyLoader = () => loading ? <Loader /> : '';
         return (
             <div className="content">
@@ -60,27 +61,34 @@ class Teams extends Component {
                     <Row>
                         <Col md={12}>
                             <Card
-                                title="Match"
                                 ctTableFullWidth
                                 ctTableResponsive
                                 content={
-                                    <ReactTable
-                                        id="match_table"
-                                        ref={r => (this.reactTable = r)}
-                                        LoadingComponent={MyLoader}
-                                        data={data}
-                                        columns={this.match_columns}
-                                        defaultPageSize={10}
-                                        pageSizeOptions={[5, 10, 15, 20]}
-                                        noDataText="No Record Found.."
-                                        filterable
-                                        HeaderClassName="text-bold"
-                                        defaultFilterMethod={(filter, row) =>
-                                            String(row[filter.id])
-                                                .toLowerCase()
-                                                .includes(filter.value.toLowerCase())
-                                        }
-                                    />
+                                    <Fragment>
+                                        <div className='title-bg'>
+                                            <span className='title-left'>
+                                                <h4>Match</h4>
+                                            </span>
+                                        </div>
+                                        <ReactTable
+                                            id="match_table"
+                                            ref={r => (this.reactTable = r)}
+                                            LoadingComponent={MyLoader}
+                                            data={data}
+                                            columns={this.match_columns}
+                                            defaultPageSize={10}
+                                            pageSizeOptions={[5, 10, 15, 20]}
+                                            noDataText="No Record Found.."
+                                            filterable
+                                            HeaderClassName="text-bold"
+                                            defaultFilterMethod={(filter, row) =>
+                                                String(row[filter.id])
+                                                    .toLowerCase()
+                                                    .includes(filter.value.toLowerCase())
+                                            }
+                                        />
+                                    </Fragment>
+
                                 }
                             />
                         </Col>
