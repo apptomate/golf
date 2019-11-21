@@ -1,8 +1,7 @@
-
-import React, { Component } from "react";
-import { NavItem, Nav, NavDropdown, MenuItem } from "react-bootstrap";
-import { AuthenticationService } from "../../_services/AuthenticationService";
-import { loggedUserDetails } from "../../_helpers/Functions";
+import React, { Component } from 'react';
+import { NavItem, Nav, Dropdown, NavDropdown, MenuItem } from 'react-bootstrap';
+import { AuthenticationService } from '../../_services/AuthenticationService';
+import { loggedUserDetails } from '../../_helpers/Functions';
 class AdminNavbarLinks extends Component {
   constructor(props) {
     super(props);
@@ -15,10 +14,10 @@ class AdminNavbarLinks extends Component {
   render() {
     const notification = (
       <div>
-        <i className="fa fa-globe" />
-        <b className="caret" />
-        <span className="notification">5</span>
-        <p className="hidden-lg hidden-md">Notification</p>
+        <i className='fa fa-globe' />
+        <b className='caret' />
+        <span className='notification'>5</span>
+        <p className='hidden-lg hidden-md'>Notification</p>
       </div>
     );
     const { email } = loggedUserDetails();
@@ -63,11 +62,9 @@ class AdminNavbarLinks extends Component {
             <MenuItem divider />
             <MenuItem eventKey={2.5}>Separated link</MenuItem>
           </NavDropdown> */}
-          <NavItem >
-            {email}
-          </NavItem>
+          <NavItem className='login-name'>{email}</NavItem>
           <NavItem eventKey={3} onClick={this.logout}>
-            Logout
+            <i class='fas fa-sign-out-alt' style={{ fontSize: '13px' }}></i>
           </NavItem>
         </Nav>
       </div>

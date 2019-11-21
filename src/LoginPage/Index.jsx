@@ -7,6 +7,7 @@ import { LOGIN_URL } from '../_helpers/Constants';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
 import { getAlertMessage, loggedUserDetails } from '../_helpers/Functions';
+import logo from '../assets/img/reactlogo.png';
 
 export default class Login extends Component {
   constructor(props) {
@@ -64,7 +65,9 @@ export default class Login extends Component {
     return (
       <div className='login-bg'>
         <Row>
-          <Col md='7' />
+          <Col md='7' className='login-logo'>
+            <img src={logo} alt='logo_image' />
+          </Col>
           <Col className='login-form-center' md='3'>
             <AvForm
               className='bg-white login-form-space'

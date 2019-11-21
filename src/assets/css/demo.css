@@ -840,11 +840,11 @@ h6 {
 .form-control {
   display: block;
   width: 100%;
-  height: 50px !important;
+  height: 44px !important;
   padding: 6px 12px;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #555;
+  color: #bcbcbc !important;
   background-color: #fff;
   background-image: none;
   border: 1px solid #e0e0e0;
@@ -858,10 +858,10 @@ label {
   display: inline-block;
   max-width: 100%;
   margin-bottom: 5px;
-  font-weight: 500 !important;
-  font-size: 17px !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
   letter-spacing: 1.2px !important;
-  color: #777 !important;
+  color: #2b2b2b !important;
 }
 
 .btn-primary {
@@ -896,13 +896,241 @@ label {
 
 .card .header {
   padding: 19px 26px !important;
-  background: #2c926a !important;
+  background: #ffffff !important;
+  color: #3333;
+  display: none;
+}
+.title-bg {
+  display: flex;
+  align-items: center;
+}
+.title-left {
+  width: 80%;
+  float: left;
+}
+.title-left h4 {
+  font-size: 18px;
+  padding-left: 1rem;
+}
+
+.title-right {
+  width: 20%;
+  float: left;
+}
+.title-right button {
+  float: right;
+  padding-right: 1rem;
+  margin: 1rem;
+}
+
+.card .content {
+  padding: 0px 15px 0px 15px !important;
+}
+
+.card .footer {
+  padding: 0;
+  background-color: transparent;
+  line-height: 30px;
+  display: none;
+}
+.ReactTable .rt-th,
+.ReactTable .rt-td {
+  flex: 1 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 7px 5px;
+  overflow: hidden;
+  transition: 0.3s ease;
+  transition-property: width, min-width, padding, opacity;
+  font-size: 14px;
+  color: #7b7b7b;
+}
+.ReactTable .rt-thead.-header {
+  box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.15);
+  background: #2f996e !important;
+  padding: 7px !important;
+  color: #fff !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.4px !important;
+}
+
+.ReactTable .rt-thead .rt-resizable-header-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff !important;
+}
+.ReactTable .-pagination .-previous,
+.ReactTable .-pagination .-next {
+  flex: 1 1;
+  text-align: center;
+  background: #12574d;
   color: #fff;
 }
-.card .title {
-  margin: 0;
-  color: #ffffff !important;
-  font-weight: 500;
-  font-size: 22px !important;
-  letter-spacing: 0.5px;
+.ReactTable .-pagination .-btn {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 3px;
+  padding: 6px;
+  font-size: 1em;
+  color: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.1);
+  transition: all 0.1s ease;
+  cursor: pointer;
+  outline-width: 0;
+  color: #fff !important;
+}
+
+.edit-icon {
+  color: #ffc107;
+  background: #ffc1071f;
+  padding: 4px;
+  border-radius: 6px;
+  margin: 3px;
+  border: 1px #ffc10773 solid;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.delete-icon {
+  color: #e8052f;
+  background: #ff572226;
+  padding: 4px;
+  border-radius: 6px;
+  margin: 3px;
+  border: 1px #e8052f54 solid;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* btn */
+.cus-btn {
+  border: 2px solid black !important;
+  padding: 8px 10px !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+}
+
+/* Green */
+.success {
+  border-color: #4caf50 !important;
+  color: green !important;
+}
+
+.success:hover {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+/* Blue */
+.info {
+  border-color: #2196f3 !important;
+  color: dodgerblue !important;
+}
+
+.info:hover {
+  background: #2196f3 !important;
+  color: white !important;
+}
+
+/* Orange */
+.warning {
+  border-color: #ff9800 !important;
+  color: orange !important;
+}
+
+.warning:hover {
+  background: #ff9800 !important;
+  color: white !important;
+}
+
+/* Red */
+.danger {
+  border-color: #f44336 !important;
+  color: red !important;
+}
+
+.danger:hover {
+  background: #f44336 !important;
+  color: white !important;
+}
+
+/* Gray */
+.default {
+  border-color: #e7e7e7 !important;
+  color: black !important;
+}
+
+.default:hover {
+  background: #e7e7e7 !important;
+}
+
+.navbar-default .navbar-brand {
+  color: #104e45 !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+}
+.container-fluid > .navbar-collapse,
+.container-fluid > .navbar-header,
+.container > .navbar-collapse,
+.container > .navbar-header {
+  margin-right: 0px;
+  margin-left: 14px !important;
+}
+.login-name {
+  font-size: 14px !important;
+  color: #115349 !important;
+  font-weight: 500 !important;
+}
+
+.sidebar:after,
+body > .navbar-collapse:after {
+  background: #88888800 !important;
+  background-size: 150% 150%;
+  z-index: 3;
+  opacity: 1;
+}
+.ReactTable .-pagination .-center {
+  flex: auto !important;
+}
+.main-panel > .content {
+  padding: 30px 15px;
+  min-height: calc(101% - 139px);
+  min-height: 88vh !important;
+}
+.modal-header {
+  padding: 15px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #2f996e !important;
+  color: #fff !important;
+  text-align: center !important;
+}
+.ReactTable .rt-noData {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 74% !important;
+  transform: translate(-50%, -50%);
+  background: rgb(17, 83, 73) !important;
+  transition: all 0.3s ease;
+  z-index: 1;
+  pointer-events: none;
+  padding: 4px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  border-radius: 5px !important;
+}
+.login-logo {
+  height: 100vh;
+  display: flex;
+}
+.login-logo img {
+  width: 20%;
+  align-items: center;
+  display: block;
+  margin: auto;
 }

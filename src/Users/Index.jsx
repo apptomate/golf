@@ -107,22 +107,17 @@ class Users extends Component {
         width: 130,
         Cell: ({ row }) => (
           <Fragment>
-            <Button
-              bsStyle='info'
+            <i
               data-user_id={row['_original'].userId}
               onClick={e => this.userUpdateModal(e, row)}
-              bsSize='small'
-            >
-              <i className='fas fa-pencil-alt' />
-            </Button>{' '}
-            <Button
-              bsStyle='danger'
+              className='fas fa-pencil-alt edit-icon'
+            />
+
+            <i
               data-user_id={row['_original'].userId}
               onClick={this.removeUser}
-              bsSize='small'
-            >
-              <i className='fas fas fa-trash' />
-            </Button>
+              className='fas fas fa-trash delete-icon'
+            />
           </Fragment>
         )
       }
@@ -309,18 +304,29 @@ class Users extends Component {
           <Row>
             <Col md={12}>
               <Card
-                title='Users'
                 ctTableFullWidth
                 ctTableResponsive
                 content={
                   <Fragment>
-                    <span className='add-user-style'>
-                      <Button onClick={this.userAddModal}>
-                        <i className='fas fa-user-plus' />
-                      </Button>
-                    </span>
-                    <br />
-                    <br />
+                    {/* <span className='add-user-style'>
+                      
+                    </span> */}
+
+                    <div className='title-bg'>
+                      <span className='title-left'>
+                        <h4>Users</h4>
+                      </span>
+                      <span className='title-right'>
+                        <Button
+                          className='cus-btn info'
+                          variant='outline-info'
+                          onClick={this.userAddModal}
+                        >
+                          <i className='fas fa-user-plus' />
+                        </Button>
+                      </span>
+                    </div>
+
                     <ReactTable
                       id='users_table'
                       ref={r => (this.reactTable = r)}
