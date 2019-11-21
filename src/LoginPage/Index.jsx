@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { Redirect } from "react-router-dom";
-import { Row, Col, Button, FormGroup } from 'reactstrap';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { Button, Row, Col, } from "react-bootstrap";
 import { AuthenticationService } from '../_services/AuthenticationService';
 import { LOGIN_URL } from '../_helpers/Constants';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
-import { getAlertMessage, loggedUserDetails } from '../_helpers/Functions';
+import { getAlertMessage, loggedUserDetails, FieldGroup } from '../_helpers/Functions';
 
 export default class Login extends Component {
   constructor(props) {
@@ -14,23 +13,25 @@ export default class Login extends Component {
     this.state = {
       email: '',
       password: '',
-      userTypeid: 1,
+      userTypeid: 2,
       isLoggedIn: false
     }
     this.handleValidation = this.handleValidation.bind(this);
     this.handleFieldChange = this.handleFieldChange.bind(this);
   }
   //Login Validation
-  handleValidation = () => {
+  handleValidation = (e) => {
+    e.preventDefault();
     const { email, password, userTypeid } = this.state;
     const formData = {
       email, password, userTypeid
     };
     Axios.post(LOGIN_URL, formData)
       .then(response => {
-        const { token, user: { email } } = response.data;
+        const { token, user: { email, userWithTypeId } } = response.data;
         let loginData = {
-          email: email
+          email: email,
+          userWithTypeId: userWithTypeId
         };
         localStorage.setItem('authToken', token);
         localStorage.setItem('loggedUser', JSON.stringify(loginData));
@@ -63,18 +64,16 @@ export default class Login extends Component {
           <Col className="login-form-center" md="4">
             <Row>
               <Col md="12">
-                <AvForm className="bg-white login-form-space" onValidSubmit={this.handleValidation}>
+                <form className="bg-white login-form-space" onSubmit={this.handleValidation}>
                   <h3 className="login-title">Login</h3>
-                  <FormGroup>
-                    <AvField name="email" label="Email" type="email" required onChange={this.handleFieldChange} value={email} />
-                  </FormGroup>
-                  <br />
-                  <FormGroup>
-                    <AvField name="password" label="Password" type="password" required onChange={this.handleFieldChange} value={password} />
-                  </FormGroup>
-                  <br />
-                  <center> <Button color="primary">Login</Button></center>
-                </AvForm>
+                  <FieldGroup
+                    id="email" name="email" type="email" label="Email" placeholder="Email" required
+                    onChange={this.handleFieldChange} value={email} />
+                  <FieldGroup
+                    id="password" name="password" type="password" label="Password" placeholder="Password" required
+                    onChange={this.handleFieldChange} value={password} />
+                  <center> <Button type='submit' color="primary">Login</Button></center>
+                </form>
               </Col>
             </Row>
           </Col>

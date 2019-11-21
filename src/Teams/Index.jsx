@@ -6,16 +6,25 @@ import 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import Profile from '../Common/Profile/Index.jsx';
 import Loader from '../Common/Loader/Index.jsx';
-import { getAllTeams } from '../_actions/Index.jsx';
-import { dateFormat } from '../_helpers/Functions.jsx';
+import { getAllTeams, addTeam, uploadProfile } from '../_actions/Index.jsx';
+import { dateFormat, loggedUserDetails } from '../_helpers/Functions.jsx';
+import AddUpdateTeam from './Modals/AddUpdateTeam.jsx';
+import { Button } from "react-bootstrap";
 class Teams extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            expanded: {}
+            expanded: {},
+            teamModal: false,
+            teamName: '', startingHole: '',
+            uploadFile: '', previewFile: '',
         };
         this.reactTable = React.createRef();
         this.reset_expand_row = this.reset_expand_row.bind(this);
+        this.teamAddModal = this.teamAddModal.bind(this);
+        this.handleFieldChange = this.handleFieldChange.bind(this);
+        this.addUpdateTeamDetails = this.addUpdateTeamDetails.bind(this);
+        this.uploadLogo = this.uploadLogo.bind(this);
         this.teams_columns = [
             {
                 Header: 'Profile',
@@ -69,6 +78,63 @@ class Teams extends Component {
             }
         ];
     }
+    //Upload Logo
+    uploadLogo = () => {
+        let { uploadFile } = this.state;
+        const reader = new FileReader();
+        reader.readAsDataURL(uploadFile);
+        reader.onload = (event) => {
+            const processed_file_base64 = (event.target.result).split(',')[1];
+            let data = {
+                file: processed_file_base64,
+                fileName: uploadFile.name
+            };
+            this.props.uploadProfile(data);
+        }
+    }
+    //Add Update Team
+    addUpdateTeamDetails = (e) => {
+        e.preventDefault();
+        const { userWithTypeId } = loggedUserDetails();
+        let {
+            teamName, startingHole
+        } = this.state;
+        let { UploadProfileResponse: { data: profileUrl = '' } } = this.props;
+        let formData = {
+            teamName: teamName,
+            teamIcon: profileUrl,
+            createdBy: parseInt(userWithTypeId),
+            startingHole: parseInt(startingHole)
+        };
+        this.props.addTeam(formData);
+        this.teamAddModal();
+    }
+    //Field Change
+    handleFieldChange = (event) => {
+        const { name, value, type } = event.target;
+        if (type === 'file') {
+            var file = event.target.files[0];
+            if (file) {
+                var preview = URL.createObjectURL(file);
+                this.setState({ uploadFile: file, previewFile: preview });
+            }
+        } else {
+            this.setState({ [name]: value });
+        }
+    }
+    //resetStateValues
+    resetStateValues = () => {
+        this.setState({
+            teamName: '', startingHole: '', previewFile: '', uploadFile: ''
+        });
+    }
+    //Team Add Modal
+    teamAddModal = () => {
+        this.resetStateValues();
+        this.setState(prevState => ({
+            teamModal: !prevState.teamModal
+        }));
+    }
     //Reset
     reset_expand_row() {
         this.setState({ expanded: {} });
@@ -94,12 +160,20 @@ class Teams extends Component {
         this.props.getAllTeams();
     }
     render() {
-        const { expanded } = this.state;
+        const { expanded, teamModal, teamName, startingHole, previewFile } = this.state;
         const
             {
                 TeamsResponse: { data = [], loading = '' }
             } = this.props;
         const MyLoader = () => loading ? <Loader /> : '';
+        const teamModalProps = {
+            toggle: teamModal, toggleFunc: this.teamAddModal,
+            handleFieldChange: this.handleFieldChange,
+            teamName: teamName, startingHole: startingHole,
+            addUpdateTeamDetails: this.addUpdateTeamDetails,
+            uploadLogo: this.uploadLogo,
+            previewFile: previewFile
+        };
         return (
             <div className="content">
                 <Grid fluid>
@@ -110,65 +184,73 @@ class Teams extends Component {
                                 ctTableFullWidth
                                 ctTableResponsive
                                 content={
-                                    <ReactTable
-                                        expanded={expanded}
-                                        onPageChange={this.reset_expand_row}
-                                        onPageSizeChange={this.reset_expand_row}
-                                        onSortedChange={this.reset_expand_row}
-                                        onFilteredChange={this.reset_expand_row}
-                                        getTdProps={(state, rowInfo) => {
-                                            if (rowInfo === undefined) {
-                                                return {};
-                                            }
-                                            return {
-                                                'data-qnt': rowInfo.original.noOfPlayers,
-                                                onClick: () => {
-                                                    this.expand_row(rowInfo);
+                                    <Fragment>
+                                        <span className='add-user-style' >
+                                            <Button onClick={this.teamAddModal}><i className="fas fa-users" /></Button>
+                                        </span><br /><br />
+                                        <ReactTable
+                                            expanded={expanded}
+                                            onPageChange={this.reset_expand_row}
+                                            onPageSizeChange={this.reset_expand_row}
+                                            onSortedChange={this.reset_expand_row}
+                                            onFilteredChange={this.reset_expand_row}
+                                            getTdProps={(state, rowInfo) => {
+                                                if (rowInfo === undefined) {
+                                                    return {};
                                                 }
-                                            };
-                                        }}
-                                        id="teams_table"
-                                        ref={r => (this.reactTable = r)}
-                                        LoadingComponent={MyLoader}
-                                        data={data}
-                                        columns={this.teams_columns}
-                                        defaultPageSize={10}
-                                        pageSizeOptions={[5, 10, 15, 20]}
-                                        noDataText="No Record Found.."
-                                        filterable
-                                        HeaderClassName="text-bold"
-                                        defaultFilterMethod={(filter, row) =>
-                                            String(row[filter.id])
-                                                .toLowerCase()
-                                                .includes(filter.value.toLowerCase())
-                                        }
-                                        SubComponent={row => {
-                                            let users_list = row.original.teamplayerList || [];
-                                            if (users_list.length) users_list = JSON.parse(users_list);
-                                            return (
-                                                <div style={{ padding: "10px" }}>
-                                                    <center>
-                                                        <h5>Team Players</h5>
-                                                    </center>
-                                                    <ReactTable
-                                                        ref={r => (this.reactTableUsers = r)}
-                                                        data={users_list || []}
-                                                        columns={this.users_columns}
-                                                        pageSize={users_list.length}
-                                                        showPagination={false}
-                                                        noDataText="No Record Found.."
-                                                        filterable
-                                                        HeaderClassName="text-bold"
-                                                        defaultFilterMethod={(filter, row) =>
-                                                            String(row[filter.id])
-                                                                .toLowerCase()
-                                                                .includes(filter.value.toLowerCase())
-                                                        }
-                                                    />
-                                                </div>
-                                            );
-                                        }}
-                                    />
+                                                return {
+                                                    'data-qnt': rowInfo.original.noOfPlayers,
+                                                    onClick: () => {
+                                                        this.expand_row(rowInfo);
+                                                    }
+                                                };
+                                            }}
+                                            id="teams_table"
+                                            ref={r => (this.reactTable = r)}
+                                            LoadingComponent={MyLoader}
+                                            data={data}
+                                            columns={this.teams_columns}
+                                            defaultPageSize={10}
+                                            pageSizeOptions={[5, 10, 15, 20]}
+                                            noDataText="No Record Found.."
+                                            filterable
+                                            HeaderClassName="text-bold"
+                                            defaultFilterMethod={(filter, row) =>
+                                                String(row[filter.id])
+                                                    .toLowerCase()
+                                                    .includes(filter.value.toLowerCase())
+                                            }
+                                            SubComponent={row => {
+                                                let users_list = row.original.teamplayerList || [];
+                                                if (users_list.length) users_list = JSON.parse(users_list);
+                                                return (
+                                                    <div style={{ padding: "10px" }}>
+                                                        <center>
+                                                            <h5>Team Players</h5>
+                                                        </center>
+                                                        <ReactTable
+                                                            ref={r => (this.reactTableUsers = r)}
+                                                            data={users_list || []}
+                                                            columns={this.users_columns}
+                                                            pageSize={users_list.length}
+                                                            showPagination={false}
+                                                            noDataText="No Record Found.."
+                                                            filterable
+                                                            HeaderClassName="text-bold"
+                                                            defaultFilterMethod={(filter, row) =>
+                                                                String(row[filter.id])
+                                                                    .toLowerCase()
+                                                                    .includes(filter.value.toLowerCase())
+                                                            }
+                                                        />
+                                                    </div>
+                                                );
+                                            }}
+                                        />
+                                        {/* Team Modal */}
+                                        <AddUpdateTeam teamModalProps={teamModalProps} />
+                                        {/* Team Modal */}
+                                    </Fragment>
                                 }
                             />
                         </Col>
@@ -180,9 +262,13 @@ class Teams extends Component {
 }
 const getState = state => {
     return {
-        TeamsResponse: state.getAllTeams
+        TeamsResponse: state.getAllTeams,
+        UploadProfileResponse: state.uploadProfile
     }
 }
 export default connect(getState, {
-    getAllTeams
+    getAllTeams,
+    addTeam,
+    uploadProfile
+
 })(Teams)

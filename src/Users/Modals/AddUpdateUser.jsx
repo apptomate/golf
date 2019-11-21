@@ -1,17 +1,16 @@
 import React, { Fragment, Component } from 'react';
-import { Modal, FormGroup, Radio, ControlLabel, FormControl, Checkbox, Button } from "react-bootstrap";
+import { Modal, FormGroup, Radio, ControlLabel, FormControl, Checkbox, Button, Image } from "react-bootstrap";
 import { FieldGroup } from '../../_helpers/Functions';
+import DefaultUser from '../../assets/img/default_user.jpg';
 export default class AddUpdateUser extends Component {
     render() {
-        const { toggle, toggleFunc, handleFieldChange, firstName, lastName, dob, email, password, phoneNumber, address, pinCode, countryId,
+        const { userModalProps: { toggle, toggleFunc, handleFieldChange, firstName, lastName, dob, email, password, phoneNumber, address, pinCode, countryId,
             stateId, gender, isEmailNotification, isPublicProfile, isSMSNotification, city, countryList, stateList, userTypesList, userTypeId,
-            addUpdateUserDetails } = this.props;
-        //const typeArray =  userTypeId.split(',');
+            addUpdateUserDetails, uploadProfile, previewFile } } = this.props;
         const user_types_array = userTypesList.map((list, key) => (
-            <Checkbox inline value={list.userTypeId} name='userTypeId' onChange={handleFieldChange} key={'user_type_' + key}>
+            <Checkbox inline value={list.userTypeId} name='userTypeId' checked={userTypeId.includes(list.userTypeId.toString())} onChange={handleFieldChange} key={'user_type_' + key}>
                 {list.userType}</Checkbox>
         ));
-        console.log('Prop', this.props);
         return (
             <Fragment>
                 <Modal show={toggle} onHide={toggleFunc} backdrop={false}>
@@ -20,6 +19,22 @@ export default class AddUpdateUser extends Component {
                     </Modal.Header>
                     <Modal.Body>
                         <form onSubmit={addUpdateUserDetails}>
+                            <center>
+                                <Image src={previewFile || DefaultUser} rounded width='100px' height='100px' />
+                                <FieldGroup
+                                    id="profileImage"
+                                    name='profileImage'
+                                    accept='.png, .jpg, .jpeg, .mp4'
+                                    onChange={handleFieldChange}
+                                    type="file"
+                                    label="Profile"
+                                />
+                                {(previewFile) &&
+                                    <Button bsStyle="primary" onClick={uploadProfile}>
+                                        <i className='fas fa-upload' />
+                                    </Button>
+                                }
+                            </center>
                             <FieldGroup
                                 id="firstName" name="firstName" type="text" label="First Name" placeholder="First Name" required
                                 onChange={handleFieldChange} value={firstName} />
@@ -78,10 +93,10 @@ export default class AddUpdateUser extends Component {
                             </FormGroup>
                             <FormGroup>
                                 <ControlLabel>is Public Profile</ControlLabel><br />
-                                <Radio name="isPublicProfile" value='true' inline onChange={handleFieldChange} checked={isPublicProfile}>
+                                <Radio name="isPublicProfile" value='true' inline onChange={handleFieldChange} checked={isPublicProfile === 'true'}>
                                     Yes
                                 </Radio>{' '}
-                                <Radio name="isPublicProfile" value='false' inline onChange={handleFieldChange} checked={isPublicProfile === false}>
+                                <Radio name="isPublicProfile" value='false' inline onChange={handleFieldChange} checked={isPublicProfile === 'false'}>
                                     No
                                 </Radio>{' '}
                             </FormGroup>
@@ -89,13 +104,6 @@ export default class AddUpdateUser extends Component {
                                 <ControlLabel>User Type</ControlLabel><br />
                                 {user_types_array}
                             </FormGroup>
-                            {/* <FormGroup controlId="userTypeId">
-                                <ControlLabel>User Type</ControlLabel>
-                                <FormControl componentClass="select" placeholder="" required name='userTypeId' onChange={handleFieldChange} value={userTypeId}>
-                                    <option value="">Select User Type</option>
-                                    {userTypesList}
-                                </FormControl>
-                            </FormGroup> */}
                             <center><hr />
                                 <Button bsStyle="danger" onClick={toggleFunc}>
                                     Discard

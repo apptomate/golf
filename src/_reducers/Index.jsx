@@ -7,6 +7,8 @@ import { getCountryStates } from './StateReducers/GetCountryStates';
 import { removeUser } from './UsersReducers/RemoveUser';
 import { getAllUserTypes } from './UsersReducers/UserTypes';
 import { addUser } from './UsersReducers/AddUser';
+import { uploadProfile } from './UsersReducers/UploadProfile';
+import { addTeam } from './TeamsReducers/AddTeam';
 
 const RootReducer = combineReducers({
     getAllUsers,
@@ -16,7 +18,9 @@ const RootReducer = combineReducers({
     getCountryStates,
     removeUser,
     getAllUserTypes,
-    addUser
+    addUser,
+    uploadProfile,
+    addTeam
 });
 
 export default RootReducer;

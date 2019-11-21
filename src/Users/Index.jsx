@@ -1,14 +1,13 @@
 import React, { Component, Fragment } from 'react';
-import { Grid, Row, Col } from "react-bootstrap";
+import { Grid, Row, Col, Button } from "react-bootstrap";
 import Card from "../components/Card/Card.jsx";
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { connect } from 'react-redux';
-import { getAllUsers, getAllCountries, getCountryStates, removeUser, getAllUserTypes, addUser } from '../_actions/Index.jsx';
+import { getAllUsers, getAllCountries, getCountryStates, removeUser, getAllUserTypes, addUser, uploadProfile } from '../_actions/Index.jsx';
 import Profile from '../Common/Profile/Index.jsx';
 import Loader from '../Common/Loader/Index.jsx';
 import { dateFormat } from '../_helpers/Functions.jsx';
-import { Button } from "react-bootstrap";
 import Swal from 'sweetalert2';
 import AddUpdateUser from './Modals/AddUpdateUser.jsx';
 
@@ -18,7 +17,8 @@ class Users extends Component {
         this.state = {
             userModal: false,
             firstName: '', lastName: '', dob: '', email: '', password: '', phoneNumber: '', address: '', pinCode: '', countryId: '',
-            stateId: '', gender: '', isEmailNotification: '', isPublicProfile: '', isSMSNotification: '', city: '', userTypeId: []
+            stateId: '', gender: '', isEmailNotification: '', isPublicProfile: '', isSMSNotification: '', city: '', userTypeId: [], uploadFile: '',
+            previewFile: ''
         };
         this.reactTable = React.createRef();
         this.userUpdateModal = this.userUpdateModal.bind(this);
@@ -26,6 +26,7 @@ class Users extends Component {
         this.removeUser = this.removeUser.bind(this);
         this.addUpdateUserDetails = this.addUpdateUserDetails.bind(this);
         this.userAddModal = this.userAddModal.bind(this);
+        this.uploadProfile = this.uploadProfile.bind(this);
         this.users_columns = [
             {
                 Header: 'Profile',
@@ -105,11 +106,26 @@ class Users extends Component {
             }
         ];
     }
+    //Upload Profile
+    uploadProfile = () => {
+        let { uploadFile } = this.state;
+        const reader = new FileReader();
+        reader.readAsDataURL(uploadFile);
+        reader.onload = (event) => {
+            const processed_file_base64 = (event.target.result).split(',')[1];
+            let data = {
+                file: processed_file_base64,
+                fileName: uploadFile.name
+            };
+            this.props.uploadProfile(data);
+        }
+    }
     //resetStateValues
     resetStateValues = () => {
         this.setState({
             firstName: '', lastName: '', dob: '', email: '', password: '', phoneNumber: '', address: '', pinCode: '', countryId: '',
-            stateId: '', gender: '', isEmailNotification: '', isPublicProfile: '', isSMSNotification: '', city: '', userTypeId: []
+            stateId: '', gender: '', isEmailNotification: '', isPublicProfile: '', isSMSNotification: '', city: '', userTypeId: [],
+            previewFile: '', uploadFile: ''
         });
     }
     //Add Update User
@@ -120,13 +136,14 @@ class Users extends Component {
             countryId, stateId, gender, isEmailNotification, isPublicProfile, isSMSNotification,
             city, userTypeId
         } = this.state;
+        let { UploadProfileResponse: { data: profileUrl = '' } } = this.props;
         let formData = {
             firstName: firstName,
             lastName: lastName,
             email: email,
             gender: gender,
             dob: dob,
-            profileImage: '',
+            profileImage: profileUrl,
             phoneNumber: phoneNumber,
             password: password,
             countryId: parseInt(countryId),
@@ -137,7 +154,7 @@ class Users extends Component {
             isEmailNotification: isEmailNotification,
             isSMSNotification: isSMSNotification,
             isPublicProfile: isPublicProfile,
-            userTypeId: userTypeId
+            userTypeId: userTypeId.toString()
         }
         this.props.addUser(formData);
         this.userAddModal();
@@ -168,11 +185,23 @@ class Users extends Component {
             this.props.getCountryStates(value);
         }
         if (type === 'checkbox') {
-            if (name === ' userTypeId') {
-                console.log('Val:', value);
+            if (name === 'userTypeId') {
+                var previous_values = this.state.userTypeId;
+                if (checked) previous_values.push(value)
+                else previous_values = previous_values.filter(list => list.toString() !== value.toString())
+                this.setState({ [name]: previous_values });
+            } else {
+                this.setState({ [name]: checked });
             }
-            this.setState({ [name]: checked });
-        } else {
+        }
+        else if (type === 'file') {
+            var file = event.target.files[0];
+            if (file) {
+                var preview = URL.createObjectURL(file);
+                this.setState({ uploadFile: file, previewFile: preview });
+            }
+        }
+        else {
             this.setState({ [name]: value });
         }
     }
@@ -218,18 +247,18 @@ class Users extends Component {
         this.props.getAllUserTypes();
     }
     render() {
+
         const
             {
                 UsersResponse: { data = [], loading = '' },
                 CountriesResponse: { data: countryList = [] },
                 StatesResponse: { data: stateList = [] },
                 UserTypesResponse: { data: userTypesList = [] },
-                RemoveResponse,
             } = this.props;
         const {
             userModal, firstName, lastName, dob, email, password, phoneNumber, address, pinCode,
             countryId, stateId, gender, isEmailNotification, isPublicProfile, isSMSNotification,
-            city, userTypeId
+            city, userTypeId, previewFile
         } = this.state;
         const country_list_array = countryList.map((list, key) => (
             <option value={list.countryId} key={'country_' + key}>
@@ -241,6 +270,15 @@ class Users extends Component {
                 {list.stateName}
             </option>
         ));
+        const userModalProps = {
+            toggle: userModal, toggleFunc: this.userAddModal, handleFieldChange: this.handleFieldChange, firstName: firstName, lastName: lastName, dob: dob, email: email,
+            password: password, phoneNumber: phoneNumber, address: address, pinCode: pinCode,
+            countryId: countryId, stateId: stateId, gender: gender, isEmailNotification: isEmailNotification,
+            isPublicProfile: isPublicProfile, isSMSNotification: isSMSNotification, city: city, userTypeId: userTypeId, countryList: country_list_array,
+            stateList: state_list_array, userTypesList: userTypesList, addUpdateUserDetails: this.addUpdateUserDetails, uploadProfile: this.uploadProfile,
+            previewFile: previewFile,
+
+        };
         const MyLoader = () => loading ? <Loader /> : '';
         return (
             <div className="content">
@@ -274,11 +312,7 @@ class Users extends Component {
                                             }
                                         />
                                         {/* User Modal */}
-                                        <AddUpdateUser toggle={userModal} toggleFunc={this.userAddModal} handleFieldChange={this.handleFieldChange} firstName={firstName} lastName={lastName} dob={dob} email={email}
-                                            password={password} phoneNumber={phoneNumber} address={address} pinCode={pinCode}
-                                            countryId={countryId} stateId={stateId} gender={gender} isEmailNotification={isEmailNotification}
-                                            isPublicProfile={isPublicProfile} isSMSNotification={isSMSNotification} city={city} userTypeId={userTypeId} countryList={country_list_array}
-                                            stateList={state_list_array} userTypesList={userTypesList} addUpdateUserDetails={this.addUpdateUserDetails} />
+                                        <AddUpdateUser userModalProps={userModalProps} />
                                         {/* User Modal */}
                                     </Fragment>
                                 }
@@ -295,9 +329,8 @@ const getState = state => {
         UsersResponse: state.getAllUsers,
         CountriesResponse: state.getAllCountries,
         StatesResponse: state.getCountryStates,
-        RemoveResponse: state.removeUser,
         UserTypesResponse: state.getAllUserTypes,
-        AddUserResponse: state.addUser
+        UploadProfileResponse: state.uploadProfile
     }
 }
 export default connect(getState, {
@@ -306,5 +339,6 @@ export default connect(getState, {
     getCountryStates,
     removeUser,
     getAllUserTypes,
-    addUser
+    addUser,
+    uploadProfile
 })(Users)

@@ -1,7 +1,8 @@
 import Axios from 'axios';
 import {
     ALLUSERS_URL, ALLTEAMS_URL, ALLMATCHES_URL, ALLCOUNTRIES_URL,
-    COUNTRYSTATES_URL, REMOVEUSER_URL, ALLUSERTYPES_URL, ADDUSER_URL
+    COUNTRYSTATES_URL, REMOVEUSER_URL, ALLUSERTYPES_URL, ADDUSER_URL, UPLOADUSERPROFILE_URL,
+    ADDTEAM_URL
 } from '../_helpers/Constants';
 import { authHeader } from '../_helpers/AuthHeaders';
 import {
@@ -12,7 +13,9 @@ import {
     COUNTRYSTATES_SUCCESS, COUNTRYSTATES_ERROR,
     REMOVEUSER_SUCCESS, REMOVEUSER_ERROR,
     ALLUSERTYPES_SUCCESS, ALLUSERTYPES_ERROR,
-    ADDUSER_SUCCESS, ADDUSER_ERROR
+    ADDUSER_SUCCESS, ADDUSER_ERROR,
+    UPLOADUSERPROFILE_SUCCESS, UPLOADUSERPROFILE_ERROR,
+    ADDTEAM_SUCCESS, ADDTEAM_ERROR
 } from './ActionTypes';
 import { handleResponse } from '../_helpers/HandleResponse';
 
@@ -62,7 +65,7 @@ export function getAllUserTypes() {
             })
     };
 }
-//Get All Users
+//Add Users
 export function addUser(formData) {
     return dispatch => {
         dispatch({
@@ -81,6 +84,27 @@ export function addUser(formData) {
                     handleResponse(error.response);
                     dispatch({
                         type: ADDUSER_ERROR,
+                        payload: error.response.data
+                    });
+                }
+            })
+    };
+}
+//Upload User Profile
+export function uploadProfile(formData) {
+    return dispatch => {
+        Axios.post(UPLOADUSERPROFILE_URL, formData, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: UPLOADUSERPROFILE_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: UPLOADUSERPROFILE_ERROR,
                         payload: error.response.data
                     });
                 }
@@ -137,6 +161,31 @@ export function getAllTeams() {
                     });
                 }
             });
+    };
+}
+//Add Team
+export function addTeam(formData) {
+    return dispatch => {
+        Axios.post(ADDTEAM_URL, formData, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ALLTEAMS_LOADING
+                });
+                dispatch({
+                    type: ADDTEAM_SUCCESS,
+                    payload: response.data
+                });
+                dispatch(getAllTeams());
+            })
+            .catch(error => {
+                if (error.response) {
+                    //handleResponse(error.response);
+                    dispatch({
+                        type: ADDTEAM_ERROR,
+                        payload: error.response.data
+                    });
+                }
+            })
     };
 }
 
