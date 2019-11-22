@@ -1,15 +1,14 @@
 import React, { Component, Fragment } from 'react';
-import { Grid, Row, Col } from "react-bootstrap";
+import { Grid, Row, Col, Button } from "react-bootstrap";
 import Card from "../components/Card/Card.jsx";
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import Profile from '../Common/Profile/Index.jsx';
 import Loader from '../Common/Loader/Index.jsx';
-import { getAllTeams, addTeam, uploadProfile } from '../_actions/Index.jsx';
+import { getAllTeams, addTeam, uploadProfile, getAllPlayers, addTeamPlayers } from '../_actions/Index.jsx';
 import { dateFormat, loggedUserDetails } from '../_helpers/Functions.jsx';
 import AddUpdateTeam from './Modals/AddUpdateTeam.jsx';
-import { Button } from "react-bootstrap";
 class Teams extends Component {
     constructor(props) {
         super(props);
@@ -18,6 +17,7 @@ class Teams extends Component {
             teamModal: false,
             teamName: '', startingHole: '',
             uploadFile: '', previewFile: '',
+            activeTab: 1, isScoreKeeper: '', selectedPlayers: []
         };
         this.reactTable = React.createRef();
         this.reset_expand_row = this.reset_expand_row.bind(this);
@@ -25,6 +25,8 @@ class Teams extends Component {
         this.handleFieldChange = this.handleFieldChange.bind(this);
         this.addUpdateTeamDetails = this.addUpdateTeamDetails.bind(this);
         this.uploadLogo = this.uploadLogo.bind(this);
+        this.handleTab = this.handleTab.bind(this);
+        this.assignTeamPlayers = this.assignTeamPlayers.bind(this);
         this.teams_columns = [
             {
                 Header: 'Profile',
@@ -78,6 +80,22 @@ class Teams extends Component {
             }
         ];
     }
+    //Assign Team Players
+    assignTeamPlayers = () => {
+        let { AddTeamResponse: { data: { teamID = '' } } } = this.props;
+        let { isScoreKeeper, selectedPlayers } = this.state;
+        const formData = {
+            teamId: parseInt(teamID),
+            scoreKeeperID: parseInt(isScoreKeeper),
+            playerId: selectedPlayers.toString()
+        };
+        this.props.addTeamPlayers(formData);
+        this.teamAddModal();
+    }
+    //Handle Tab
+    handleTab = (key) => {
+        this.setState({ activeTab: key });
+    }
     //Upload Logo
     uploadLogo = () => {
         let { uploadFile } = this.state;
@@ -107,25 +125,39 @@ class Teams extends Component {
             startingHole: parseInt(startingHole)
         };
         this.props.addTeam(formData);
-        this.teamAddModal();
+        this.setState({ activeTab: 2 });
     }
     //Field Change
     handleFieldChange = (event) => {
-        const { name, value, type } = event.target;
-        if (type === 'file') {
-            var file = event.target.files[0];
-            if (file) {
-                var preview = URL.createObjectURL(file);
-                this.setState({ uploadFile: file, previewFile: preview });
-            }
-        } else {
-            this.setState({ [name]: value });
+        const { name, value, type, checked } = event.target;
+        let { selectedPlayers, isScoreKeeper } = this.state;
+        switch (type) {
+            case 'file':
+                var file = event.target.files[0];
+                if (file) {
+                    var preview = URL.createObjectURL(file);
+                    this.setState({ uploadFile: file, previewFile: preview });
+                }
+                break;
+            case 'checkbox':
+                if (checked) selectedPlayers.push(value)
+                else selectedPlayers = selectedPlayers.filter(list => parseInt(list) !== parseInt(value))
+                if (parseInt(value) === parseInt(isScoreKeeper)) this.setState({ isScoreKeeper: '' });
+                this.setState({ [name]: selectedPlayers });
+                break;
+            case 'radio':
+                selectedPlayers = selectedPlayers.filter(list => parseInt(list) !== parseInt(value));
+                this.setState({ selectedPlayers: selectedPlayers, [name]: value });
+                break;
+            default:
+                this.setState({ [name]: value });
+                break;
         }
     }
     //resetStateValues
     resetStateValues = () => {
         this.setState({
-            teamName: '', startingHole: '', previewFile: '', uploadFile: ''
+            teamName: '', startingHole: '', previewFile: '', uploadFile: '', selectedPlayers: [], isScoreKeeper: '', activeTab: 1
         });
     }
     //Team Add Modal
@@ -151,28 +183,35 @@ class Teams extends Component {
         if (expanded[row.nestingPath]) {
             expanded_row[row.nestingPath] = false;
         }
-        this.setState(() => ({        //   
+        this.setState(() => ({
             expanded: expanded_row
         }));
     }
     //Initial Table Data 
     componentDidMount() {
         this.props.getAllTeams();
+        this.props.getAllPlayers();
     }
     render() {
-        const { expanded, teamModal, teamName, startingHole, previewFile } = this.state;
+        const { expanded, teamModal, teamName, startingHole, previewFile, activeTab, isScoreKeeper, selectedPlayers } = this.state;
         const
             {
-                TeamsResponse: { data = [], loading = '' }
+                TeamsResponse: { data = [], loading = '' },
+                AllPlayersResponse: { data: playersData = [] }
             } = this.props;
         const MyLoader = () => loading ? <Loader /> : '';
         const teamModalProps = {
             toggle: teamModal, toggleFunc: this.teamAddModal,
             handleFieldChange: this.handleFieldChange,
-            teamName: teamName, startingHole: startingHole,
+            teamName, startingHole,
             addUpdateTeamDetails: this.addUpdateTeamDetails,
             uploadLogo: this.uploadLogo,
-            previewFile: previewFile
+            previewFile,
+            activeTab, handleTab: this.handleTab,
+            playersData,
+            isScoreKeeper,
+            selectedPlayers,
+            assignTeamPlayers: this.assignTeamPlayers
         };
         return (
             <div className="content">
@@ -273,12 +312,16 @@ class Teams extends Component {
 const getState = state => {
     return {
         TeamsResponse: state.getAllTeams,
-        UploadProfileResponse: state.uploadProfile
+        UploadProfileResponse: state.uploadProfile,
+        AllPlayersResponse: state.getAllPlayers,
+        AddTeamResponse: state.addTeam
     }
 }
 export default connect(getState, {
     getAllTeams,
     addTeam,
-    uploadProfile
+    uploadProfile,
+    getAllPlayers,
+    addTeamPlayers
 
 })(Teams)

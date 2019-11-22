@@ -176,25 +176,27 @@ class Users extends Component {
         if (name === 'countryId' && value) {
             this.props.getCountryStates(value);
         }
-        if (type === 'checkbox') {
-            if (name === 'userTypeId') {
-                var previous_values = this.state.userTypeId;
-                if (checked) previous_values.push(value)
-                else previous_values = previous_values.filter(list => list.toString() !== value.toString())
-                this.setState({ [name]: previous_values });
-            } else {
-                this.setState({ [name]: checked });
-            }
-        }
-        else if (type === 'file') {
-            var file = event.target.files[0];
-            if (file) {
-                var preview = URL.createObjectURL(file);
-                this.setState({ uploadFile: file, previewFile: preview });
-            }
-        }
-        else {
-            this.setState({ [name]: value });
+        switch (type) {
+            case 'checkbox':
+                if (name === 'userTypeId') {
+                    var previous_values = this.state.userTypeId;
+                    if (checked) previous_values.push(value)
+                    else previous_values = previous_values.filter(list => list.toString() !== value.toString())
+                    this.setState({ [name]: previous_values });
+                } else {
+                    this.setState({ [name]: checked });
+                }
+                break;
+            case 'file':
+                var file = event.target.files[0];
+                if (file) {
+                    var preview = URL.createObjectURL(file);
+                    this.setState({ uploadFile: file, previewFile: preview });
+                }
+                break;
+            default:
+                this.setState({ [name]: value });
+                break;
         }
     }
     //Add User Modal

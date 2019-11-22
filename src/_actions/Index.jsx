@@ -2,7 +2,7 @@ import Axios from 'axios';
 import {
     ALLUSERS_URL, ALLTEAMS_URL, ALLMATCHES_URL, ALLCOUNTRIES_URL,
     COUNTRYSTATES_URL, REMOVEUSER_URL, ALLUSERTYPES_URL, ADDUSER_URL, UPLOADUSERPROFILE_URL,
-    ADDTEAM_URL
+    ADDTEAM_URL, ALLPLAYERS_URL, ADDTEAMPLAYERS_URL, ALLCOMPETITIONTYPES_URL
 } from '../_helpers/Constants';
 import { authHeader } from '../_helpers/AuthHeaders';
 import {
@@ -15,7 +15,10 @@ import {
     ALLUSERTYPES_SUCCESS, ALLUSERTYPES_ERROR,
     ADDUSER_SUCCESS, ADDUSER_ERROR,
     UPLOADUSERPROFILE_SUCCESS, UPLOADUSERPROFILE_ERROR,
-    ADDTEAM_SUCCESS, ADDTEAM_ERROR
+    ADDTEAM_SUCCESS, ADDTEAM_ERROR,
+    ALLPLAYERS_SUCCESS, ALLPLAYERS_ERROR,
+    ADDTEAMPLAYERS_SUCCESS, ADDTEAMPLAYERS_ERROR,
+    ALLCOMPETITIONTYPES_SUCCESS, ALLCOMPETITIONTYPES_ERROR
 } from './ActionTypes';
 import { handleResponse } from '../_helpers/HandleResponse';
 
@@ -179,9 +182,55 @@ export function addTeam(formData) {
             })
             .catch(error => {
                 if (error.response) {
-                    //handleResponse(error.response);
+                    handleResponse(error.response);
                     dispatch({
                         type: ADDTEAM_ERROR,
+                        payload: error.response.data
+                    });
+                }
+            })
+    };
+}
+//Get All Players
+export function getAllPlayers() {
+    return dispatch => {
+        Axios.get(ALLPLAYERS_URL, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ALLPLAYERS_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: ALLPLAYERS_ERROR,
+                        payload: error.response
+                    });
+                }
+            })
+    };
+}
+//Add Team Players
+export function addTeamPlayers(formData) {
+    return dispatch => {
+        Axios.put(ADDTEAMPLAYERS_URL, formData, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ALLTEAMS_LOADING
+                });
+                dispatch({
+                    type: ADDTEAMPLAYERS_SUCCESS,
+                    payload: response.data
+                });
+                dispatch(getAllTeams());
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: ADDTEAMPLAYERS_ERROR,
                         payload: error.response.data
                     });
                 }
@@ -214,6 +263,28 @@ export function getAllMatches() {
             });
     };
 }
+//Get All Competition Types
+export function getAllCompetitionTypes() {
+    return dispatch => {
+        Axios.get(ALLCOMPETITIONTYPES_URL, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ALLCOMPETITIONTYPES_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: ALLCOMPETITIONTYPES_ERROR,
+                        payload: error.response
+                    });
+                }
+            });
+    };
+}
+
 
 //Get All Countries
 export function getAllCountries() {

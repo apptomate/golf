@@ -9,6 +9,9 @@ import { getAllUserTypes } from './UsersReducers/UserTypes';
 import { addUser } from './UsersReducers/AddUser';
 import { uploadProfile } from './UsersReducers/UploadProfile';
 import { addTeam } from './TeamsReducers/AddTeam';
+import { getAllPlayers } from './TeamsReducers/GetAllPlayers';
+import { addTeamPlayers } from './TeamsReducers/AddTeamPlayers';
+import { getAllCompetitionTypes } from './MatchReducers/GetAllCompetitionTypes';
 
 const RootReducer = combineReducers({
     getAllUsers,
@@ -20,7 +23,10 @@ const RootReducer = combineReducers({
     getAllUserTypes,
     addUser,
     uploadProfile,
-    addTeam
+    addTeam,
+    getAllPlayers,
+    addTeamPlayers,
+    getAllCompetitionTypes
 });
 
 export default RootReducer;

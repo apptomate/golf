@@ -63,10 +63,10 @@ export default class Login extends Component {
     return (
       <div className='login-bg'>
         <Row>
-          <Col md='7' className='login-logo'>
+          <Col md={7} className='login-logo'>
             <img src={logo} alt='logo_image' />
           </Col>
-          <Col className='login-form-center' md='3'>
+          <Col className='login-form-center' md={3}>
             <form className="bg-white login-form-space" onSubmit={this.handleValidation}>
               <h3 className="login-title">Login</h3>
               <FieldGroup
@@ -78,7 +78,7 @@ export default class Login extends Component {
               <center> <Button type='submit' color="primary">Login</Button></center>
             </form>
           </Col>
-          <Col className='login-form-center' md='1'></Col>
+          <Col className='login-form-center' md={1}></Col>
         </Row>
       </div>
     );
