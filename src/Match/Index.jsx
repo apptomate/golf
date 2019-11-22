@@ -166,13 +166,13 @@ class Teams extends Component {
                                                 <h4>Match</h4>
                                             </span>
                                             <span className='title-right'>
-                                                <Button
+                                                {/* <Button
                                                     className='cus-btn info'
                                                     variant='outline-info'
                                                     onClick={this.matchAddModal}
                                                 >
                                                     <i className='fas fa-golf-ball' />
-                                                </Button>
+                                                </Button> */}
                                             </span>
                                         </div>
                                         <ReactTable
