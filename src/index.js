@@ -8,9 +8,9 @@ import "./assets/css/pe-icon-7-stroke.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from './App/Index';
 ReactDOM.render(
-  // <React.StrictMode>
-  <App />
-  // </React.StrictMode>
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
   ,
   document.getElementById("root")
 );

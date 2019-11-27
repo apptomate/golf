@@ -2,7 +2,8 @@ import Axios from 'axios';
 import {
     ALLUSERS_URL, ALLTEAMS_URL, ALLMATCHES_URL, ALLCOUNTRIES_URL,
     COUNTRYSTATES_URL, REMOVEUSER_URL, ALLUSERTYPES_URL, ADDUSER_URL, UPLOADUSERPROFILE_URL,
-    ADDTEAM_URL, ALLPLAYERS_URL, ADDTEAMPLAYERS_URL, ALLCOMPETITIONTYPES_URL
+    ADDTEAM_URL, ALLPLAYERS_URL, ADDTEAMPLAYERS_URL, ALLCOMPETITIONTYPES_URL,
+    ALLMATCHRULESLIST_URL, ADDMATCH_URL, ADDMATCHRULE_URL, UPDATEUSER_URL
 } from '../_helpers/Constants';
 import { authHeader } from '../_helpers/AuthHeaders';
 import {
@@ -18,7 +19,11 @@ import {
     ADDTEAM_SUCCESS, ADDTEAM_ERROR,
     ALLPLAYERS_SUCCESS, ALLPLAYERS_ERROR,
     ADDTEAMPLAYERS_SUCCESS, ADDTEAMPLAYERS_ERROR,
-    ALLCOMPETITIONTYPES_SUCCESS, ALLCOMPETITIONTYPES_ERROR
+    ALLCOMPETITIONTYPES_SUCCESS, ALLCOMPETITIONTYPES_ERROR,
+    ALLMATCHRULESLIST_SUCCESS, ALLMATCHRULESLIST_ERROR,
+    ADDMATCH_SUCCESS, ADDMATCH_ERROR,
+    ADDMATCHRULE_SUCCESS, ADDMATCHRULE_ERROR,
+    UPDATEUSER_SUCCESS, UPDATEUSER_ERROR
 } from './ActionTypes';
 import { handleResponse } from '../_helpers/HandleResponse';
 
@@ -108,6 +113,31 @@ export function uploadProfile(formData) {
                     handleResponse(error.response);
                     dispatch({
                         type: UPLOADUSERPROFILE_ERROR,
+                        payload: error.response.data
+                    });
+                }
+            })
+    };
+}
+//Update Users
+export function updateUser(formData) {
+    return dispatch => {
+        Axios.put(UPDATEUSER_URL, formData, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ALLUSERS_LOADING
+                });
+                dispatch({
+                    type: UPDATEUSER_SUCCESS,
+                    payload: response.data
+                });
+                dispatch(getAllUsers());
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: UPDATEUSER_ERROR,
                         payload: error.response.data
                     });
                 }
@@ -284,7 +314,71 @@ export function getAllCompetitionTypes() {
             });
     };
 }
-
+//Get All Match Rules
+export function getAllMatchRulesList() {
+    return dispatch => {
+        Axios.get(ALLMATCHRULESLIST_URL, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ALLMATCHRULESLIST_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: ALLMATCHRULESLIST_ERROR,
+                        payload: error.response
+                    });
+                }
+            });
+    };
+}
+//Add Match
+export function addMatch(formData) {
+    return dispatch => {
+        Axios.post(ADDMATCH_URL, formData, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ADDMATCH_SUCCESS,
+                    payload: response.data
+                });
+                dispatch(getAllMatches());
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: ADDMATCH_ERROR,
+                        payload: error.response.data
+                    });
+                }
+            })
+    };
+}
+//Add Match Rule
+export function addMatchRule(formData) {
+    return dispatch => {
+        Axios.post(ADDMATCHRULE_URL, formData, { headers: authHeader() })
+            .then(response => {
+                dispatch({
+                    type: ADDMATCHRULE_SUCCESS,
+                    payload: response.data
+                });
+                dispatch(getAllMatchRulesList());
+            })
+            .catch(error => {
+                if (error.response) {
+                    handleResponse(error.response);
+                    dispatch({
+                        type: ADDMATCHRULE_ERROR,
+                        payload: error.response.data
+                    });
+                }
+            })
+    };
+}
 
 //Get All Countries
 export function getAllCountries() {

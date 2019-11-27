@@ -5,14 +5,16 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import Loader from '../Common/Loader/Index';
-import { getAllMatches, getAllCompetitionTypes } from '../_actions/Index.jsx';
+import { getAllMatches, getAllCompetitionTypes, getAllMatchRulesList, addMatch, addMatchRule } from '../_actions/Index.jsx';
 import AddUpdateMatch from './Modals/AddUpdateMatch.jsx';
 import { loggedUserDetails } from '../_helpers/Functions.jsx';
+import moment from 'moment';
 class Teams extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: 1, matchModal: false, matchName: '', competitionTypeId: ''
+            activeTab: 1, matchModal: false, matchName: '', competitionTypeId: '', matchFee: '', matchStartDate: '',
+            matchEndDate: '', selectedRules: [], newMatchRule: '', newRuleToggle: false
         };
         this.reactTable = React.createRef();
         this.matchAddModal = this.matchAddModal.bind(this);
@@ -20,6 +22,10 @@ class Teams extends Component {
         this.handleFieldChange = this.handleFieldChange.bind(this);
         this.handleTab = this.handleTab.bind(this);
         this.addUpdateMatchDetails = this.addUpdateMatchDetails.bind(this);
+        this.handleStartDate = this.handleStartDate.bind(this);
+        this.handleEndDate = this.handleEndDate.bind(this);
+        this.addNewRule = this.addNewRule.bind(this);
+        this.addRuleToggleFunc = this.addRuleToggleFunc.bind(this);
         this.match_columns = [
             {
                 Header: 'Match Code',
@@ -55,61 +61,61 @@ class Teams extends Component {
             }
         ];
     }
+    //Add Rule Toggle Func
+    addRuleToggleFunc = () => {
+        this.setState(prevState => ({ newRuleToggle: !prevState.newRuleToggle }));
+    }
+    //Add Match Rule
+    addNewRule = () => {
+        let { newMatchRule } = this.state;
+        var formData = {
+            matchRules: newMatchRule
+        };
+        this.props.addMatchRule(formData);
+    }
     //Add Update Match
     addUpdateMatchDetails = (e) => {
         e.preventDefault();
-        // const { userWithTypeId } = loggedUserDetails();
-        // let {
-        // } = this.state;
-        // let { UploadProfileResponse: { data: profileUrl = '' } } = this.props;
-        // let formData = {
-        //     {
-        //   matchName: string,
-        //   matchCode: string,
-        //   matchRuleId: string,
-        //   matchStartDate: string,
-        //   matchEndDate: string,
-        //   matchFee: 0,
-        //   createdBy: 0,
-        //   competitionTypeId: 0,
-        //   matchId: 0,
-        //   matchStatus: string,
-        //   isSaveAndNotify: true
-        // };
-        // this.props.addTeam(formData);
-        // this.setState({ activeTab: 2 });
+        const { userWithTypeId } = loggedUserDetails();
+        let { matchName, selectedRules, matchStartDate, matchEndDate, matchFee, competitionTypeId } = this.state;
+        let formData = {
+            matchName: matchName,
+            matchRuleId: selectedRules.toString(),
+            matchStartDate: moment(matchStartDate).format('YYYY/MM/DD HH:mm:ss'),
+            matchEndDate: moment(matchEndDate).format('YYYY/MM/DD HH:mm:ss'),
+            matchFee: parseFloat(matchFee),
+            createdBy: parseInt(userWithTypeId),
+            competitionTypeId: parseInt(competitionTypeId),
+        };
+        this.props.addMatch(formData);
+        this.setState({ activeTab: 2 });
     }
     //Handle Tab
     handleTab = (key) => {
         this.setState({ activeTab: key });
     }
+    //Start Date Change
+    handleStartDate = event => {
+        this.setState({ matchStartDate: event._d });
+    };
+    //End Date Change
+    handleEndDate = event => {
+        this.setState({ matchEndDate: event._d });
+    };
     //Field Change
     handleFieldChange = (event) => {
         const { name, value, type, checked } = event.target;
-        this.setState({ [name]: value });
-        // let { selectedPlayers, isScoreKeeper } = this.state;
-        // switch (type) {
-        //     case 'file':
-        //         var file = event.target.files[0];
-        //         if (file) {
-        //             var preview = URL.createObjectURL(file);
-        //             this.setState({ uploadFile: file, previewFile: preview });
-        //         }
-        //         break;
-        //     case 'checkbox':
-        //         if (checked) selectedPlayers.push(value)
-        //         else selectedPlayers = selectedPlayers.filter(list => parseInt(list) !== parseInt(value))
-        //         if (parseInt(value) === parseInt(isScoreKeeper)) this.setState({ isScoreKeeper: '' });
-        //         this.setState({ [name]: selectedPlayers });
-        //         break;
-        //     case 'radio':
-        //         selectedPlayers = selectedPlayers.filter(list => parseInt(list) !== parseInt(value));
-        //         this.setState({ selectedPlayers: selectedPlayers, [name]: value });
-        //         break;
-        //     default:
-        //         this.setState({ [name]: value });
-        //         break;
-        // }
+        let { selectedRules } = this.state;
+        switch (type) {
+            case 'checkbox':
+                if (checked) selectedRules.push(value)
+                else selectedRules = selectedRules.filter(list => parseInt(list) !== parseInt(value))
+                this.setState({ [name]: selectedRules });
+                break;
+            default:
+                this.setState({ [name]: value });
+                break;
+        }
     }
     //Match Add Modal
     matchAddModal = () => {
@@ -121,7 +127,8 @@ class Teams extends Component {
     //resetStateValues
     resetStateValues = () => {
         this.setState({
-            activeTab: 1, matchName: '', competitionTypeId: ''
+            activeTab: 1, matchName: '', competitionTypeId: '', matchFee: '', matchFee: '', matchStartDate: '',
+            matchEndDate: '', selectedRules: [], newMatchRule: '', newRuleToggle: false
         });
     }
     //Match Add Modal
@@ -134,23 +141,32 @@ class Teams extends Component {
     componentDidMount() {
         this.props.getAllMatches();
         this.props.getAllCompetitionTypes();
+        this.props.getAllMatchRulesList();
     }
     render() {
-        const { matchModal, activeTab, matchName, competitionTypeId } = this.state;
-
+        const { matchModal, activeTab, matchName, competitionTypeId, matchFee, matchStartDate, matchEndDate,
+            selectedRules, newMatchRule, newRuleToggle } = this.state;
         let
             {
                 MatchResponse: { data = [], loading = '' },
-                CompetitionTypesResponse: { data: competitionTypes = [] }
+                CompetitionTypesResponse: { data: competitionTypes = [] },
+                MatchRulesListResponse: { data: matchRulesList = [] },
+                //AddMatchResponse: { data: { matchId = '' } }
             } = this.props;
-        console.log(competitionTypes)
-        if (!Object.keys(data).length) data = [];
-        const MyLoader = () => loading ? <Loader /> : '';
+        if (!Array.isArray(data)) data = [];
+        competitionTypes = competitionTypes.map((list, key) => (
+            <option value={list.competitionTypeId} key={'compt_types_' + key}>
+                {list.competitionName}
+            </option>
+        ));
         const matchModalProps = {
             toggle: matchModal, toggleFunc: this.matchAddModal, handleFieldChange: this.handleFieldChange,
             activeTab, handleTab: this.handleTab, addUpdateMatchDetails: this.addUpdateMatchDetails,
-            matchName, competitionTypeId
+            matchName, competitionTypeId, competitionTypes, matchFee, matchStartDate, matchEndDate,
+            matchRulesList, selectedRules, handleStartDate: this.handleStartDate, handleEndDate: this.handleEndDate,
+            addNewRule: this.addNewRule, newMatchRule, newRuleToggle, addRuleToggleFunc: this.addRuleToggleFunc
         };
+        const MyLoader = () => loading ? <Loader /> : '';
         return (
             <div className="content">
                 <Grid fluid>
@@ -166,13 +182,13 @@ class Teams extends Component {
                                                 <h4>Match</h4>
                                             </span>
                                             <span className='title-right'>
-                                                {/* <Button
+                                                <Button
                                                     className='cus-btn info'
                                                     variant='outline-info'
                                                     onClick={this.matchAddModal}
                                                 >
                                                     <i className='fas fa-golf-ball' />
-                                                </Button> */}
+                                                </Button>
                                             </span>
                                         </div>
                                         <ReactTable
@@ -209,10 +225,15 @@ class Teams extends Component {
 const getState = state => {
     return {
         MatchResponse: state.getAllMatches,
-        CompetitionTypesResponse: state.getAllCompetitionTypes
+        CompetitionTypesResponse: state.getAllCompetitionTypes,
+        MatchRulesListResponse: state.getAllMatchRulesList,
+        AddMatchResponse: state.addMatch
     }
 }
 export default connect(getState, {
     getAllMatches,
-    getAllCompetitionTypes
+    getAllCompetitionTypes,
+    getAllMatchRulesList,
+    addMatch,
+    addMatchRule
 })(Teams)

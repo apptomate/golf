@@ -7,7 +7,7 @@ export default class AddUpdateTeam extends Component {
         const { teamModalProps: {
             toggle, toggleFunc, handleFieldChange, teamName, startingHole, addUpdateTeamDetails, uploadLogo, previewFile,
             handleTab, activeTab, playersData, isScoreKeeper, selectedPlayers, assignTeamPlayers
-        } } = this.props; console.log('SP', selectedPlayers);
+        } } = this.props;
         const playersList = playersData.map((list, key) => {
             var userTypesArray = list.userType.split(',');
             var type_list = userTypesArray.map((value, key) => <Badge key={`user_type_${key}`}>{value}</Badge>);

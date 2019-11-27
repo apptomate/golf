@@ -4,7 +4,8 @@ import AdminLayout from "../layouts/Admin";
 import Login from "../LoginPage/Index";
 import configureStore from '../_store/ConfigureStore';
 import { Provider } from "react-redux";
-import { ProtectedRoute } from '../components/ProtectedRoute/Index';
+import ResetPassword from '../ResetPassword/Index';
+import { AuthenticateAdminRoutes } from '../_helpers/Functions';
 
 const store = configureStore();
 export default class App extends Component {
@@ -16,8 +17,9 @@ export default class App extends Component {
             <Provider store={store}>
                 <BrowserRouter>
                     <Switch>
-                        <Route path='/login' render={props => <Login />} />
-                        <Route path="/admin" render={props => <AdminLayout {...props} />} />
+                        <Route path='/login' component={Login} />
+                        <Route path='/resetPassword' component={ResetPassword} />
+                        <Route path="/admin" component={AuthenticateAdminRoutes(AdminLayout)} />
                         <Redirect from="/" to="/admin/users" />
                     </Switch>
                 </BrowserRouter>

@@ -12,6 +12,10 @@ import { addTeam } from './TeamsReducers/AddTeam';
 import { getAllPlayers } from './TeamsReducers/GetAllPlayers';
 import { addTeamPlayers } from './TeamsReducers/AddTeamPlayers';
 import { getAllCompetitionTypes } from './MatchReducers/GetAllCompetitionTypes';
+import { getAllMatchRulesList } from './MatchReducers/GetAllMatchRulesList';
+import { addMatch } from './MatchReducers/AddMatch';
+import { addMatchRule } from './MatchReducers/AddMatchRule';
+import { updateUser } from './UsersReducers/UpdateUser';
 
 const RootReducer = combineReducers({
     getAllUsers,
@@ -26,7 +30,11 @@ const RootReducer = combineReducers({
     addTeam,
     getAllPlayers,
     addTeamPlayers,
-    getAllCompetitionTypes
+    getAllCompetitionTypes,
+    getAllMatchRulesList,
+    addMatch,
+    addMatchRule,
+    updateUser
 });
 
 export default RootReducer;

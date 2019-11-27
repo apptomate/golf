@@ -1,13 +1,28 @@
 import React, { Fragment, Component } from 'react';
-import { Modal, Tab, Tabs, Button, FormGroup, ControlLabel, FormControl, Image, ListGroup, ListGroupItem, Badge, Checkbox, Radio } from "react-bootstrap";
+import { Modal, Tab, Tabs, Button, FormGroup, ControlLabel, FormControl, ListGroup, ListGroupItem, Row, Checkbox, Col } from "react-bootstrap";
 import { FieldGroup } from '../../_helpers/Functions';
-import DefaultUser from '../../assets/img/default_user.jpg';
+import * as Datetime from 'react-datetime';
+import 'react-datetime/css/react-datetime.css';
 export default class AddUpdateMatch extends Component {
     render() {
-        const { matchModalProps: {
+        let { matchModalProps: {
             toggle, toggleFunc, handleFieldChange, activeTab, handleTab, addUpdateMatchDetails,
-            matchName, competitionTypeId
+            matchName, competitionTypeId, competitionTypes, matchFee, matchStartDate, matchEndDate,
+            matchRulesList, selectedRules, handleStartDate, handleEndDate, addNewRule, newMatchRule,
+            addRuleToggleFunc, newRuleToggle
         } } = this.props;
+        matchRulesList = matchRulesList.map((list, key) => (
+            <Fragment key={`rule_${key}`}>
+                <ListGroupItem >
+                    <Checkbox inline value={list.matchRuleId} name='selectedRules' onChange={handleFieldChange} checked={(selectedRules.includes(list.matchRuleId.toString()))} />
+                    {list.ruleName}
+                </ListGroupItem>
+            </Fragment>
+        ));
+        var today = Datetime.moment();
+        const startDateValidate = (current) => {
+            return current >= today;
+        };
         return (
             <Fragment>
                 <Modal show={toggle} onHide={toggleFunc} backdrop={false}>
@@ -30,12 +45,58 @@ export default class AddUpdateMatch extends Component {
                                         <ControlLabel>Competition Type</ControlLabel>
                                         <FormControl componentClass="select" placeholder="" required name='competitionTypeId' onChange={handleFieldChange} value={competitionTypeId} >
                                             <option value="">Select Competition Type</option>
-
+                                            {competitionTypes}
                                         </FormControl>
                                     </FormGroup>
-                                    {/* <FieldGroup
-                                        id="startingHole" name="startingHole" min={0} type="number" label="Starting Hole" placeholder="Starting Hole" required
-                                        onChange={handleFieldChange} value={startingHole} /> */}
+                                    <ControlLabel>Rule</ControlLabel>
+                                    <span style={{ float: 'right', cursor: 'pointer' }} onClick={addRuleToggleFunc}><i className='fas fa-plus-circle' /></span>
+                                    {(newRuleToggle &&
+                                        <Row>
+                                            <Col md={9}>
+                                                <FieldGroup
+                                                    id="newMatchRule" name="newMatchRule" type="text" label="New Rule" placeholder="New Rule" required
+                                                    onChange={handleFieldChange} value={newMatchRule} />
+                                            </Col>
+                                            <Col md={3}>
+                                                {(newMatchRule &&
+                                                    <Button style={{ marginTop: '2.5rem' }} bsStyle="primary" onClick={addNewRule}>
+                                                        Save
+                                                </Button>
+                                                )}
+                                            </Col>
+                                        </Row>
+                                    )}
+                                    <ListGroup>
+                                        {matchRulesList}
+                                    </ListGroup>
+                                    <FormGroup controlId="matchStartDate">
+                                        <ControlLabel>Start Date</ControlLabel>
+                                        <Datetime
+                                            name="matchStartDate"
+                                            dateFormat="DD/MM/YYYY"
+                                            timeFormat="HH:mm:ss"
+                                            onChange={handleStartDate}
+                                            value={matchStartDate}
+                                            required
+                                            placeholder='DD/MM/YYYY HH:mm:ss'
+                                            isValidDate={startDateValidate}
+                                        />
+                                    </FormGroup>
+                                    <FormGroup controlId="matchEndDate">
+                                        <ControlLabel>End Date</ControlLabel>
+                                        <Datetime
+                                            name="matchEndDate"
+                                            dateFormat="DD/MM/YYYY"
+                                            timeFormat="HH:mm:ss"
+                                            onChange={handleEndDate}
+                                            value={matchEndDate}
+                                            required
+                                            placeholder='DD/MM/YYYY HH:mm:ss'
+                                        />
+                                    </FormGroup>
+                                    <FieldGroup
+                                        id="matchFee" name="matchFee" type="text" label="Match Fee ($)" placeholder="Match Fee" required
+                                        onChange={handleFieldChange} value={matchFee} />
                                     <center><hr />
                                         <Button bsStyle="danger" onClick={toggleFunc}>
                                             Discard

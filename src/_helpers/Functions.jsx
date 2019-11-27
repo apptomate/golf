@@ -1,6 +1,7 @@
 import moment from 'moment';
 import React from 'react';
 import { FormGroup, ControlLabel, FormControl, HelpBlock } from "react-bootstrap";
+import Login from '../LoginPage/Index';
 
 //Alert Message
 export const getAlertMessage = (icon, text) => ({
@@ -33,4 +34,12 @@ export function FieldGroup({ id, label, help, ...props }) {
             {help && <HelpBlock>{help}</HelpBlock>}
         </FormGroup>
     );
+}
+
+//Authenticate Admin Routes
+export function AuthenticateAdminRoutes(component) {
+    const { email } = loggedUserDetails();
+    if (email) return component;
+    else return Login;
+
 }

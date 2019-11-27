@@ -6,7 +6,7 @@ export default class AddUpdateUser extends Component {
     render() {
         const { userModalProps: { toggle, toggleFunc, handleFieldChange, firstName, lastName, dob, email, password, phoneNumber, address, pinCode, countryId,
             stateId, gender, isEmailNotification, isPublicProfile, isSMSNotification, city, countryList, stateList, userTypesList, userTypeId,
-            addUpdateUserDetails, uploadProfile, previewFile } } = this.props;
+            addUpdateUserDetails, uploadProfile, previewFile, saveType } } = this.props;
         const user_types_array = userTypesList.map((list, key) => (
             <Checkbox inline value={list.userTypeId} name='userTypeId' checked={userTypeId.includes(list.userTypeId.toString())} onChange={handleFieldChange} key={'user_type_' + key}>
                 {list.userType}</Checkbox>
@@ -15,7 +15,7 @@ export default class AddUpdateUser extends Component {
             <Fragment>
                 <Modal show={toggle} onHide={toggleFunc} backdrop={false}>
                     <Modal.Header closeButton>
-                        <Modal.Title>User</Modal.Title>
+                        <Modal.Title>{(saveType === 'create') ? 'New ' : 'Update '}User</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <form onSubmit={addUpdateUserDetails}>
@@ -55,10 +55,10 @@ export default class AddUpdateUser extends Component {
                             </FormGroup>
                             <FieldGroup
                                 id="email" name="email" type="email" label="Email" placeholder="Email" required
-                                onChange={handleFieldChange} value={email} />
+                                onChange={handleFieldChange} value={email} disabled={(saveType === 'update')} />
                             <FieldGroup
                                 id="password" name="password" type="password" label="Password" placeholder="Password" required
-                                onChange={handleFieldChange} value={password} />
+                                onChange={handleFieldChange} value={password} disabled={(saveType === 'update')} />
                             <FieldGroup
                                 id="phoneNumber" name="phoneNumber" type="text" label="Phone Number" placeholder="Phone Number" required
                                 onChange={handleFieldChange} value={phoneNumber} />
@@ -93,10 +93,10 @@ export default class AddUpdateUser extends Component {
                             </FormGroup>
                             <FormGroup>
                                 <ControlLabel>is Public Profile</ControlLabel><br />
-                                <Radio name="isPublicProfile" value='true' inline onChange={handleFieldChange} checked={isPublicProfile === 'true'}>
+                                <Radio name="isPublicProfile" value='true' inline onChange={handleFieldChange} checked={isPublicProfile}>
                                     Yes
                                 </Radio>{' '}
-                                <Radio name="isPublicProfile" value='false' inline onChange={handleFieldChange} checked={isPublicProfile === 'false'}>
+                                <Radio name="isPublicProfile" value='false' inline onChange={handleFieldChange} checked={isPublicProfile === false}>
                                     No
                                 </Radio>{' '}
                             </FormGroup>
@@ -109,7 +109,7 @@ export default class AddUpdateUser extends Component {
                                     Discard
                                 </Button>{' '}
                                 <Button type='submit' bsStyle="primary" >
-                                    Save
+                                    {(saveType === 'create') ? 'Save ' : 'Update '}
                                 </Button>
                             </center>
                         </form>

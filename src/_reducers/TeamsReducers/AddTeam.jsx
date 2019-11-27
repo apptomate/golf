@@ -7,7 +7,7 @@ export function addTeam(state = arrayInitial, action) {
     const { type, payload } = action;
     switch (type) {
         case types.ADDTEAM_SUCCESS:
-            Swal.fire(getAlertMessage('success', payload.message));
+            Swal.fire(getAlertMessage('success', 'New Team Added'));
             return { data: payload, error: false };
         case types.ADDTEAM_ERROR:
             Swal.fire(getAlertMessage('error', payload.errorMessage));

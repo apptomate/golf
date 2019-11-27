@@ -4,7 +4,10 @@ import Card from "../components/Card/Card.jsx";
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { connect } from 'react-redux';
-import { getAllUsers, getAllCountries, getCountryStates, removeUser, getAllUserTypes, addUser, uploadProfile } from '../_actions/Index.jsx';
+import {
+    getAllUsers, getAllCountries, getCountryStates, removeUser, getAllUserTypes, addUser, uploadProfile,
+    updateUser
+} from '../_actions/Index.jsx';
 import Profile from '../Common/Profile/Index.jsx';
 import Loader from '../Common/Loader/Index.jsx';
 import { dateFormat } from '../_helpers/Functions.jsx';
@@ -17,7 +20,7 @@ class Users extends Component {
             userModal: false,
             firstName: '', lastName: '', dob: '', email: '', password: '', phoneNumber: '', address: '', pinCode: '', countryId: '',
             stateId: '', gender: '', isEmailNotification: '', isPublicProfile: '', isSMSNotification: '', city: '', userTypeId: [], uploadFile: '',
-            previewFile: ''
+            previewFile: '', saveType: '', userWithTypeId: '', profileImage: ''
         };
         this.reactTable = React.createRef();
         this.userUpdateModal = this.userUpdateModal.bind(this);
@@ -82,12 +85,10 @@ class Users extends Component {
                 width: 130,
                 Cell: ({ row }) => (
                     <Fragment>
-                        {/* <i
-                            data-user_id={row['_original'].userId}
+                        <i
                             onClick={e => this.userUpdateModal(e, row)}
                             className='fas fa-pencil-alt edit-icon'
-                        /> */}
-
+                        />
                         <i
                             data-user_id={row['_original'].userId}
                             onClick={this.removeUser}
@@ -117,7 +118,7 @@ class Users extends Component {
         this.setState({
             firstName: '', lastName: '', dob: '', email: '', password: '', phoneNumber: '', address: '', pinCode: '', countryId: '',
             stateId: '', gender: '', isEmailNotification: '', isPublicProfile: '', isSMSNotification: '', city: '', userTypeId: [],
-            previewFile: '', uploadFile: ''
+            previewFile: '', uploadFile: '', saveType: '', userWithTypeId: '', profileImage: ''
         });
     }
     //Add Update User
@@ -126,29 +127,22 @@ class Users extends Component {
         let {
             firstName, lastName, dob, email, password, phoneNumber, address, pinCode,
             countryId, stateId, gender, isEmailNotification, isPublicProfile, isSMSNotification,
-            city, userTypeId
+            city, userTypeId, saveType, userId, userWithTypeId, profileImage
         } = this.state;
         let { UploadProfileResponse: { data: profileUrl = '' } } = this.props;
         let formData = {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            gender: gender,
-            dob: dob,
-            profileImage: profileUrl,
-            phoneNumber: phoneNumber,
-            password: password,
+            userId: (saveType === 'update') ? parseInt(userId) : undefined,
+            userWithTypeId: (saveType === 'update') ? parseInt(userWithTypeId) : undefined,
             countryId: parseInt(countryId),
             stateId: parseInt(stateId),
-            city: city,
-            address: address,
-            pinCode: pinCode,
-            isEmailNotification: isEmailNotification,
-            isSMSNotification: isSMSNotification,
-            isPublicProfile: isPublicProfile,
-            userTypeId: userTypeId.toString()
-        }
-        this.props.addUser(formData);
+            userTypeId: userTypeId.toString(),
+            city, address, pinCode, isEmailNotification, isSMSNotification, phoneNumber, password,
+            isPublicProfile, firstName, lastName, email, gender,
+            dob: dateFormat(dob, 'YYYY/MM/DD'),
+            profileImage: profileUrl || profileImage
+        };
+        if (saveType === 'create') this.props.addUser(formData);
+        else this.props.updateUser(formData);
         this.userAddModal();
     }
     //Remove User
@@ -194,6 +188,15 @@ class Users extends Component {
                     this.setState({ uploadFile: file, previewFile: preview });
                 }
                 break;
+            case 'radio':
+                if (name === 'isPublicProfile') {
+                    var tempValue = false;
+                    if (value === 'true') tempValue = true;
+                    this.setState({ [name]: tempValue });
+                } else {
+                    this.setState({ [name]: value });
+                }
+                break;
             default:
                 this.setState({ [name]: value });
                 break;
@@ -203,35 +206,25 @@ class Users extends Component {
     userAddModal = () => {
         this.resetStateValues();
         this.setState(prevState => ({
-            userModal: !prevState.userModal
+            userModal: !prevState.userModal,
+            saveType: 'create'
         }));
     }
     //Edit User Modal
     userUpdateModal = (event, row) => {
-        let userId = event.currentTarget.dataset.user_id;
         let dob = dateFormat(row['_original'].dob, 'DD/MM/YYYY');
-        this.setState({
-            userId: userId,
-            firstName: row['_original'].firstName,
-            lastName: row['_original'].lastName,
-            email: row['_original'].email,
-            gender: row['_original'].gender,
-            dob: dob,
-            //profileImage:row['_original'].profileImage '',
-            phoneNumber: row['_original'].phoneNumber,
-            password: row['_original'].password,
-            countryId: row['_original'].countryId,
-            stateId: row['_original'].stateId,
-            city: row['_original'].city,
-            address: row['_original'].address,
-            pinCode: row['_original'].pinCode,
-            isEmailNotification: row['_original'].isEmailNotification,
-            isSMSNotification: row['_original'].isSMSNotification,
-            isPublicProfile: row['_original'].isPublicProfile,
-            userTypeId: row['_original'].userTypeId
-        });
+        let { userId, firstName, lastName, email, gender, profileImage, phoneNumber, password,
+            countryId, stateId, city, address, pinCode, isEmailNotification, isSMSNotification,
+            isPublicProfile, userTypeId, userWithTypeId } = row['_original'];
+        userTypeId = userTypeId.split(',');
+        this.props.getCountryStates(countryId);
         this.setState(prevState => ({
-            userModal: !prevState.userModal
+            userModal: !prevState.userModal,
+            userId, firstName, lastName, email, gender, dob,
+            previewFile: profileImage, phoneNumber, password,
+            countryId, stateId, city, address, pinCode, isEmailNotification,
+            isSMSNotification, isPublicProfile, userTypeId, userWithTypeId,
+            saveType: 'update', profileImage
         }));
     }
     //Mount
@@ -251,7 +244,7 @@ class Users extends Component {
         const {
             userModal, firstName, lastName, dob, email, password, phoneNumber, address, pinCode,
             countryId, stateId, gender, isEmailNotification, isPublicProfile, isSMSNotification,
-            city, userTypeId, previewFile
+            city, userTypeId, previewFile, saveType
         } = this.state;
         const country_list_array = countryList.map((list, key) => (
             <option value={list.countryId} key={'country_' + key}>
@@ -264,13 +257,10 @@ class Users extends Component {
             </option>
         ));
         const userModalProps = {
-            toggle: userModal, toggleFunc: this.userAddModal, handleFieldChange: this.handleFieldChange, firstName: firstName, lastName: lastName, dob: dob, email: email,
-            password: password, phoneNumber: phoneNumber, address: address, pinCode: pinCode,
-            countryId: countryId, stateId: stateId, gender: gender, isEmailNotification: isEmailNotification,
-            isPublicProfile: isPublicProfile, isSMSNotification: isSMSNotification, city: city, userTypeId: userTypeId, countryList: country_list_array,
-            stateList: state_list_array, userTypesList: userTypesList, addUpdateUserDetails: this.addUpdateUserDetails, uploadProfile: this.uploadProfile,
-            previewFile: previewFile,
-
+            toggle: userModal, toggleFunc: this.userAddModal, handleFieldChange: this.handleFieldChange, firstName, lastName, dob, email,
+            password, phoneNumber, address, pinCode, countryId, stateId, gender, isEmailNotification, isPublicProfile, isSMSNotification,
+            city, userTypeId, countryList: country_list_array, stateList: state_list_array, userTypesList,
+            addUpdateUserDetails: this.addUpdateUserDetails, uploadProfile: this.uploadProfile, previewFile, saveType
         };
         const MyLoader = () => loading ? <Loader /> : '';
         return (
@@ -343,5 +333,6 @@ export default connect(getState, {
     removeUser,
     getAllUserTypes,
     addUser,
-    uploadProfile
+    uploadProfile,
+    updateUser
 })(Users)

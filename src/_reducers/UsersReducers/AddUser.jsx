@@ -7,7 +7,7 @@ export function addUser(state = arrayInitial, action) {
     const { type, payload } = action;
     switch (type) {
         case types.ADDUSER_SUCCESS:
-            Swal.fire(getAlertMessage('success', 'User Added Successfully'));
+            Swal.fire(getAlertMessage('success', 'New User Added'));
             return { data: payload, error: false };
         case types.ADDUSER_ERROR:
             Swal.fire(getAlertMessage('error', payload.errorMessage));
