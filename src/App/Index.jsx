@@ -1,13 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense, lazy, } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import AdminLayout from "../layouts/Admin";
-import Login from "../LoginPage/Index";
 import configureStore from '../_store/ConfigureStore';
 import { Provider } from "react-redux";
-import ResetPassword from '../ResetPassword/Index';
-import { AuthenticateAdminRoutes } from '../_helpers/Functions';
-
+import { ProtectedRoute, PublicRoute } from '../_helpers/Functions';
 const store = configureStore();
+
+//Components
+const Login = React.lazy(() => import('../LoginPage/Index'));
+const GenerateOTP = React.lazy(() => import('../GenerateOTP'));
+const ResetPassword = React.lazy(() => import('../ResetPassword/Index'));
+const AdminLayout = React.lazy(() => import('../layouts/Admin'));
+
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -16,12 +19,15 @@ export default class App extends Component {
         return (
             <Provider store={store}>
                 <BrowserRouter>
-                    <Switch>
-                        <Route path='/login' component={Login} />
-                        <Route path='/resetPassword' component={ResetPassword} />
-                        <Route path="/admin" component={AuthenticateAdminRoutes(AdminLayout)} />
-                        <Redirect from="/" to="/admin/users" />
-                    </Switch>
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <Switch>
+                            <PublicRoute path='/login' component={Login} />
+                            <PublicRoute path='/generateOTP' component={GenerateOTP} />
+                            <PublicRoute path='/resetPassword' component={ResetPassword} />
+                            <ProtectedRoute path='/admin' component={AdminLayout} />
+                            <Redirect from="/" to="/admin/users" />
+                        </Switch>
+                    </Suspense>
                 </BrowserRouter>
             </Provider>
         );

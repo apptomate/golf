@@ -16,8 +16,14 @@ import { getAllMatchRulesList } from './MatchReducers/GetAllMatchRulesList';
 import { addMatch } from './MatchReducers/AddMatch';
 import { addMatchRule } from './MatchReducers/AddMatchRule';
 import { updateUser } from './UsersReducers/UpdateUser';
+import { authLogin } from './LoginReducers/AuthLogin';
+import { generateEmailOTP } from './LoginReducers/GenerateEmailOTP';
+import { updatePassword } from './LoginReducers/UpdatePassword';
 
 const RootReducer = combineReducers({
+    authLogin,
+    generateEmailOTP,
+    updatePassword,
     getAllUsers,
     getAllTeams,
     getAllMatches,

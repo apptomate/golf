@@ -1,7 +1,7 @@
 import moment from 'moment';
-import React from 'react';
+import React, { Children } from 'react';
 import { FormGroup, ControlLabel, FormControl, HelpBlock } from "react-bootstrap";
-import Login from '../LoginPage/Index';
+import { Redirect, Route } from 'react-router-dom';
 
 //Alert Message
 export const getAlertMessage = (icon, text) => ({
@@ -37,9 +37,15 @@ export function FieldGroup({ id, label, help, ...props }) {
 }
 
 //Authenticate Admin Routes
-export function AuthenticateAdminRoutes(component) {
+export function ProtectedRoute({ component, ...rest }) {
     const { email } = loggedUserDetails();
-    if (email) return component;
-    else return Login;
-
+    if (email) return <Route {...rest} component={component} />
+    else return <Redirect to={{ pathname: '/login' }} />
 }
+
+//Authenticate Public Routes
+export function PublicRoute({ component, ...rest }) {
+    const { email } = loggedUserDetails();
+    if (!email) return <Route {...rest} component={component} />
+    else return <Redirect to={{ pathname: '/' }} />
+} 

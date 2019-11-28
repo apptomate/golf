@@ -1,6 +1,6 @@
 export const BASE_URL = 'https://golfapp.azurewebsites.net/api/';
+//Authentication
 export const LOGIN_URL = BASE_URL + 'JWTAuthentication/login';
-
 export const GENERATEEMAILOTP_URL = BASE_URL + 'User/generateOTP';
 export const UPDATEPASSWORD_URL = BASE_URL + 'User/updatePassword';
 //USERS

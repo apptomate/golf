@@ -1,21 +1,36 @@
 import React, { Component } from 'react';
-import { Jumbotron, Button, Row, Col } from 'react-bootstrap';
+import { Button, Row, Col, Alert } from 'react-bootstrap';
 import { FieldGroup, getAlertMessage } from '../_helpers/Functions';
-import { UPDATEPASSWORD_URL } from '../_helpers/Constants';
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import Swal from 'sweetalert2';
-import Axios from 'axios';
-export default class ResetPassword extends Component {
+import logo from '../assets/img/reactlogo.png';
+import { updatePassword, generateEmailOTP } from '../_actions/Index';
+import { connect } from 'react-redux';
+class ResetPassword extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: '', matchOTP: '', newPassword: '', confirmPassword: '', otpVerified: false
+            email: '', matchOTP: '', newPassword: '', confirmPassword: '',
+            otpSendTo: '', phoneNumber: ''
         };
         this.handleFieldChange = this.handleFieldChange.bind(this);
-        this.handleValidateOTP = this.handleValidateOTP.bind(this);
+        this.handleUpdatePassword = this.handleUpdatePassword.bind(this);
+        this.generateOTP = this.generateOTP.bind(this);
+    }
+    //Generate OTP
+    generateOTP = (event) => {
+        event.preventDefault();
+        let { email, otpSendTo, phoneNumber } = this.state;
+        var formData = {
+            emailorphone: (otpSendTo === 'email') ? email : phoneNumber,
+            type: 'Forgot Password',
+            sourceType: (otpSendTo === 'email') ? 'Email' : 'Phone'
+        };
+        this.props.generateEmailOTP(formData);
+        this.setState({ matchOTP: '' })
     }
     //Validate Otp
-    handleValidateOTP = (event) => {
+    handleUpdatePassword = (event) => {
         event.preventDefault();
         let { matchOTP, email, newPassword, confirmPassword } = this.state;
         if (newPassword === confirmPassword) {
@@ -25,18 +40,7 @@ export default class ResetPassword extends Component {
                 password: newPassword,
                 sourceType: 'Email'
             };
-            Axios.put(UPDATEPASSWORD_URL, formData)
-                .then(response => {
-                    let { data: passwordUpdateResponse = '' } = response;
-                    Swal.fire(getAlertMessage('success', passwordUpdateResponse));
-                    this.setState(prevState => ({ otpVerified: !prevState.otpVerified }));
-                })
-                .catch(function (error) {
-                    if (error.response) {
-                        const { errorMessage } = error.response.data;
-                        Swal.fire(getAlertMessage('error', errorMessage));
-                    }
-                });
+            this.props.updatePassword(formData);
         } else {
             Swal.fire(getAlertMessage('error', 'Password and Confirm password are not matched'));
         }
@@ -46,27 +50,31 @@ export default class ResetPassword extends Component {
         const { name, value } = e.target;
         this.setState({ [name]: value });
     }
-    componentDidMount = () => {
-        const { location: { state: { email = '' } } } = this.props;
-        this.setState({ email });
+    componentDidMount() {
+        let { location: { state: { otpSendTo, email, phoneNumber } } } = this.props;
+        this.setState({ otpSendTo, email, phoneNumber });
     }
     render() {
-        const { matchOTP, newPassword, confirmPassword, otpVerified, email } = this.state;
-        if (otpVerified) {
+        const { matchOTP, newPassword, confirmPassword, email, otpSendTo, phoneNumber } = this.state;
+        const { userToLogin: { data: userToLoginData = '' } } = this.props;
+        if (userToLoginData) {
             return <Redirect to={{ pathname: '/login' }} />;
         }
         return (
-            <Jumbotron>
-                <center>
-                    <h1>Golf</h1>
-                    <p>
-                        Enter OTP code received from {email}
-                    </p>
-                </center>
+            <div className='login-bg'>
                 <Row>
-                    <Col md={3} />
-                    <Col md={6}>
-                        <form className="bg-white login-form-space" onSubmit={this.handleValidateOTP}>
+                    <Col md={7} className='login-logo'>
+                        <img src={logo} alt='logo_image' />
+                    </Col>
+                    <Col className='login-form-center' md={3}>
+                        <form className="bg-white login-form-space" onSubmit={this.handleUpdatePassword}>
+                            <h3 className="login-title">Reset your password</h3>
+                            <Alert bsStyle="warning"><p>We sent 6 digits security code to :</p>
+                                <p>
+                                    <i className={(otpSendTo === 'email') ? 'fas fa-envelope' : 'fas fa-mobile-alt'} />
+                                    {' '}<b>{(otpSendTo === 'email') ? email : phoneNumber}</b>
+                                </p>
+                            </Alert>
                             <FieldGroup
                                 id="matchOTP" name="matchOTP" type="text" label="OTP Code" placeholder="OTP Code" required
                                 onChange={this.handleFieldChange} value={matchOTP} />
@@ -77,12 +85,23 @@ export default class ResetPassword extends Component {
                                 id="confirmPassword" name="confirmPassword" type="password" label="Confirm Password" placeholder="Confirm Password" required
                                 onChange={this.handleFieldChange} value={confirmPassword} />
                             <center>
-                                <Button bsStyle="danger" href='/login'>Back to Login</Button>{'  '}
-                                <Button type='submit' bsStyle="primary">{`Verify & Update`}</Button></center>
+                                <Button bsStyle="default" onClick={this.generateOTP}>Resend Code</Button>{' '}
+                                <Button type='submit' bsStyle="primary">Update</Button></center>
                         </form>
                     </Col>
+                    <Col className='login-form-center' md={1}></Col>
                 </Row>
-            </Jumbotron>
+            </div>
         );
     };
 }
+const getState = state => {
+    return {
+        userToLogin: state.updatePassword
+    }
+};
+export default connect(
+    getState, {
+    updatePassword,
+    generateEmailOTP
+})(ResetPassword);

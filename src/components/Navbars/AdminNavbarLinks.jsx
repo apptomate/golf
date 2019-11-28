@@ -2,16 +2,29 @@ import React, { Component } from 'react';
 import { NavItem, Nav, Dropdown, NavDropdown, MenuItem } from 'react-bootstrap';
 import { AuthenticationService } from '../../_services/AuthenticationService';
 import { loggedUserDetails } from '../../_helpers/Functions';
+import { useHistory } from "react-router-dom";
+
+
+//Signout Button
+function SignoutButton() {
+  let history = useHistory();
+  const { email } = loggedUserDetails();
+  return email ? (
+    <NavItem eventKey={3} onClick={() => AuthenticationService.logout()}>
+      <i className='fas fa-sign-out-alt' style={{ fontSize: '13px' }} />
+    </NavItem>
+  ) : (
+      <p>Signin</p>
+    );
+}
+
 class AdminNavbarLinks extends Component {
   constructor(props) {
     super(props);
-    this.logout = this.logout.bind(this);
   }
-  //Logout
-  logout() {
-    AuthenticationService.logout();
-  }
+
   render() {
+    const { email } = loggedUserDetails();
     const notification = (
       <div>
         <i className='fa fa-globe' />
@@ -20,7 +33,6 @@ class AdminNavbarLinks extends Component {
         <p className='hidden-lg hidden-md'>Notification</p>
       </div>
     );
-    const { email } = loggedUserDetails();
     return (
       <div>
         <Nav>
@@ -63,9 +75,7 @@ class AdminNavbarLinks extends Component {
             <MenuItem eventKey={2.5}>Separated link</MenuItem>
           </NavDropdown> */}
           <NavItem className='login-name'>{email}</NavItem>
-          <NavItem eventKey={3} onClick={this.logout}>
-            <i className='fas fa-sign-out-alt' style={{ fontSize: '13px' }} />
-          </NavItem>
+          <SignoutButton />
         </Nav>
       </div>
     );

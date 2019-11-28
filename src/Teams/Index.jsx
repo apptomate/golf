@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import Profile from '../Common/Profile/Index.jsx';
 import Loader from '../Common/Loader/Index.jsx';
 import { getAllTeams, addTeam, uploadProfile, getAllPlayers, addTeamPlayers } from '../_actions/Index.jsx';
-import { dateFormat, loggedUserDetails } from '../_helpers/Functions.jsx';
+import { loggedUserDetails } from '../_helpers/Functions.jsx';
 import AddUpdateTeam from './Modals/AddUpdateTeam.jsx';
 class Teams extends Component {
     constructor(props) {

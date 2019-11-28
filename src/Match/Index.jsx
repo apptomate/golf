@@ -37,11 +37,6 @@ class Teams extends Component {
                 accessor: 'matchName',
                 className: 'text-center'
             },
-            // {
-            //     Header: 'Location',
-            //     accessor: 'matchLocation',
-            //     className: 'text-left'
-            // },
             {
                 Header: 'Start Date',
                 accessor: 'matchStartDate',
