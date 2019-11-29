@@ -13,6 +13,7 @@ import Loader from '../Common/Loader/Index.jsx';
 import { dateFormat } from '../_helpers/Functions.jsx';
 import Swal from 'sweetalert2';
 import AddUpdateUser from './Modals/AddUpdateUser.jsx';
+import PropTypes from 'prop-types';
 class Users extends Component {
     constructor(props) {
         super(props);
@@ -234,6 +235,7 @@ class Users extends Component {
         this.props.getAllUserTypes();
     }
     render() {
+
         const
             {
                 UsersResponse: { data = [], loading = '' },
@@ -316,6 +318,13 @@ class Users extends Component {
             </div>
         );
     }
+};
+//Prop Types
+Users.propTypes = {
+    data: PropTypes.object,
+    countryList: PropTypes.object,
+    stateList: PropTypes.object,
+    userTypesList: PropTypes.object
 };
 const getState = state => {
     return {

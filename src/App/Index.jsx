@@ -8,7 +8,6 @@ const store = configureStore();
 //Components
 const Login = React.lazy(() => import('../LoginPage/Index'));
 const GenerateOTP = React.lazy(() => import('../GenerateOTP'));
-const ResetPassword = React.lazy(() => import('../ResetPassword/Index'));
 const AdminLayout = React.lazy(() => import('../layouts/Admin'));
 
 export default class App extends Component {
@@ -23,7 +22,6 @@ export default class App extends Component {
                         <Switch>
                             <PublicRoute path='/login' component={Login} />
                             <PublicRoute path='/generateOTP' component={GenerateOTP} />
-                            <PublicRoute path='/resetPassword' component={ResetPassword} />
                             <ProtectedRoute path='/admin' component={AdminLayout} />
                             <Redirect from="/" to="/admin/users" />
                         </Switch>

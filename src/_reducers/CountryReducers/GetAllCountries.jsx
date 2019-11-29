@@ -5,9 +5,9 @@ export function getAllCountries(state = arrayInitial, action) {
     const { type, payload } = action;
     switch (type) {
         case types.ALLCOUNTRIES_SUCCESS:
-            return { data: payload, error: false };
+            return { data: payload };
         case types.ALLCOUNTRIES_ERROR:
-            return { data: payload, error: true }
+            return { data: payload }
         default:
             return state;
     }

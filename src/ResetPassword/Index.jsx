@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Button, Row, Col, Alert } from 'react-bootstrap';
 import { FieldGroup, getAlertMessage } from '../_helpers/Functions';
-import { Redirect, Link } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import Swal from 'sweetalert2';
 import logo from '../assets/img/reactlogo.png';
 import { updatePassword, generateEmailOTP } from '../_actions/Index';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 class ResetPassword extends Component {
     constructor(props) {
         super(props);
@@ -51,53 +52,50 @@ class ResetPassword extends Component {
         this.setState({ [name]: value });
     }
     componentDidMount() {
-        let { location: { state: { otpSendTo, email, phoneNumber } } } = this.props;
+        let { otpGeneratedProps: { otpSendTo, email, phoneNumber } } = this.props;
         this.setState({ otpSendTo, email, phoneNumber });
     }
     render() {
         const { matchOTP, newPassword, confirmPassword, email, otpSendTo, phoneNumber } = this.state;
-        const { userToLogin: { data: userToLoginData = '' } } = this.props;
-        if (userToLoginData) {
+        const { userToLogin } = this.props;
+        if (userToLogin && !userToLogin.errorMessage) {
             return <Redirect to={{ pathname: '/login' }} />;
         }
         return (
-            <div className='login-bg'>
-                <Row>
-                    <Col md={7} className='login-logo'>
-                        <img src={logo} alt='logo_image' />
-                    </Col>
-                    <Col className='login-form-center' md={3}>
-                        <form className="bg-white login-form-space" onSubmit={this.handleUpdatePassword}>
-                            <h3 className="login-title">Reset your password</h3>
-                            <Alert bsStyle="warning"><p>We sent 6 digits security code to :</p>
-                                <p>
-                                    <i className={(otpSendTo === 'email') ? 'fas fa-envelope' : 'fas fa-mobile-alt'} />
-                                    {' '}<b>{(otpSendTo === 'email') ? email : phoneNumber}</b>
-                                </p>
-                            </Alert>
-                            <FieldGroup
-                                id="matchOTP" name="matchOTP" type="text" label="OTP Code" placeholder="OTP Code" required
-                                onChange={this.handleFieldChange} value={matchOTP} />
-                            <FieldGroup
-                                id="newPassword" name="newPassword" type="password" label="New Password" placeholder="New Password" required
-                                onChange={this.handleFieldChange} value={newPassword} />
-                            <FieldGroup
-                                id="confirmPassword" name="confirmPassword" type="password" label="Confirm Password" placeholder="Confirm Password" required
-                                onChange={this.handleFieldChange} value={confirmPassword} />
-                            <center>
-                                <Button bsStyle="default" onClick={this.generateOTP}>Resend Code</Button>{' '}
-                                <Button type='submit' bsStyle="primary">Update</Button></center>
-                        </form>
-                    </Col>
-                    <Col className='login-form-center' md={1}></Col>
-                </Row>
+            <div >
+                <form className="bg-white login-form-space" onSubmit={this.handleUpdatePassword}>
+                    <h3 className="login-title">Reset your password</h3>
+                    <Alert bsStyle="warning"><p>We sent 6 digits security code to :</p>
+                        <p>
+                            <i className={(otpSendTo === 'email') ? 'fas fa-envelope' : 'fas fa-mobile-alt'} />
+                            {' '}<b>{(otpSendTo === 'email') ? email : phoneNumber}</b>
+                        </p>
+                    </Alert>
+                    <FieldGroup
+                        id="matchOTP" name="matchOTP" type="text" label="OTP Code" placeholder="OTP Code" required
+                        onChange={this.handleFieldChange} value={matchOTP} />
+                    <FieldGroup
+                        id="newPassword" name="newPassword" type="password" label="New Password" placeholder="New Password" required
+                        onChange={this.handleFieldChange} value={newPassword} />
+                    <FieldGroup
+                        id="confirmPassword" name="confirmPassword" type="password" label="Confirm Password" placeholder="Confirm Password" required
+                        onChange={this.handleFieldChange} value={confirmPassword} />
+                    <center>
+                        <Button bsStyle="default" onClick={this.generateOTP}>Resend Code</Button>{' '}
+                        <Button type='submit' bsStyle="primary">Update</Button></center>
+                </form>
             </div>
         );
     };
 }
+
+//Prop Types
+ResetPassword.propTypes = {
+    userToLogin: PropTypes.string
+};
 const getState = state => {
     return {
-        userToLogin: state.updatePassword
+        userToLogin: state.updatePassword.data
     }
 };
 export default connect(

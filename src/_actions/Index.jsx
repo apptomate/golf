@@ -28,24 +28,33 @@ import {
     UPDATEPASSWORD_SUCCESS, UPDATEPASSWORD_ERROR
 } from './ActionTypes';
 import API from './API';
+import Swal from 'sweetalert2';
+import { getAlertToast, getAlertMessage } from '../_helpers/Functions';
+
 //Authentication
 //Login
 export function authLogin(formData) {
-    // const history = useHistory()
     return dispatch => {
         API.post(LOGIN_URL, formData)
             .then(response => {
+                const { token, user: { email, userWithTypeId } } = response.data;
+                let loginData = { email, userWithTypeId };
+                localStorage.setItem('authToken', token);
+                localStorage.setItem('loggedUser', JSON.stringify(loginData));
                 dispatch({
                     type: AUTHLOGIN_SUCCESS,
                     payload: response.data
                 });
+                Swal.fire(getAlertToast('success', 'Login Success'));
             })
             .catch(error => {
                 if (error.response) {
+                    const { data } = error.response;
                     dispatch({
                         type: AUTHLOGIN_ERROR,
                         payload: error.response.data
                     });
+                    Swal.fire(getAlertMessage('error', data.errorMessage));
                 }
             })
     };
@@ -59,13 +68,16 @@ export function generateEmailOTP(formData) {
                     type: GENERATEEMAILOTP_SUCCESS,
                     payload: response.data
                 });
+                Swal.fire(getAlertToast('success', response.data));
             })
             .catch(error => {
                 if (error.response) {
+                    let { data } = error.response;
                     dispatch({
                         type: GENERATEEMAILOTP_ERROR,
-                        payload: error.response.data
+                        payload: data
                     });
+                    Swal.fire(getAlertMessage('error', data));
                 }
             })
     };
@@ -79,13 +91,16 @@ export function updatePassword(formData) {
                     type: UPDATEPASSWORD_SUCCESS,
                     payload: response.data
                 });
+                Swal.fire(getAlertToast('success', response.data));
             })
             .catch(error => {
                 if (error.response) {
+                    let { data } = error.response;
                     dispatch({
                         type: UPDATEPASSWORD_ERROR,
-                        payload: error.response.data
+                        payload: data
                     });
+                    Swal.fire(getAlertMessage('error', data.errorMessage));
                 }
             })
     };
@@ -135,7 +150,7 @@ export function getAllUserTypes() {
             })
     };
 }
-//Add Users
+//Add Users 
 export function addUser(formData) {
     return dispatch => {
         dispatch({
@@ -148,13 +163,16 @@ export function addUser(formData) {
                     payload: response.data
                 });
                 dispatch(getAllUsers());
+                Swal.fire(getAlertToast('success', 'New User Added'));
             })
             .catch(error => {
                 if (error.response) {
+                    let { data } = error.response;
                     dispatch({
                         type: ADDUSER_ERROR,
-                        payload: error.response.data
+                        payload: data
                     });
+                    Swal.fire(getAlertMessage('error', data.errorMessage));
                 }
             })
     };
@@ -168,13 +186,16 @@ export function uploadProfile(formData) {
                     type: UPLOADUSERPROFILE_SUCCESS,
                     payload: response.data
                 });
+                Swal.fire(getAlertToast('success', 'Profile Added'));
             })
             .catch(error => {
                 if (error.response) {
+                    let { data } = error.response;
                     dispatch({
                         type: UPLOADUSERPROFILE_ERROR,
-                        payload: error.response.data
+                        payload: data
                     });
+                    Swal.fire(getAlertMessage('error', data.errorMessage));
                 }
             })
     };
@@ -192,13 +213,16 @@ export function updateUser(formData) {
                     payload: response.data
                 });
                 dispatch(getAllUsers());
+                Swal.fire(getAlertToast('success', response.data));
             })
             .catch(error => {
                 if (error.response) {
+                    let { data } = error.response;
                     dispatch({
                         type: UPDATEUSER_ERROR,
-                        payload: error.response.data
+                        payload: data
                     });
+                    Swal.fire(getAlertMessage('error', data.errorMessage));
                 }
             })
     };
@@ -216,6 +240,7 @@ export function removeUser(userId) {
                     payload: response.data
                 });
                 dispatch(getAllUsers());
+                Swal.fire(getAlertToast('success', response.data));
             })
             .catch(error => {
                 if (error.response) {
@@ -223,6 +248,7 @@ export function removeUser(userId) {
                         type: REMOVEUSER_ERROR,
                         payload: error.response
                     });
+                    Swal.fire(getAlertMessage('error', error.response));
                 }
             })
     };
@@ -266,13 +292,16 @@ export function addTeam(formData) {
                     payload: response.data
                 });
                 dispatch(getAllTeams());
+                Swal.fire(getAlertToast('success', 'New Team Added'));
             })
             .catch(error => {
                 if (error.response) {
+                    let { data } = error.response;
                     dispatch({
                         type: ADDTEAM_ERROR,
-                        payload: error.response.data
+                        payload: data
                     });
+                    Swal.fire(getAlertMessage('error', data.errorMessage));
                 }
             })
     };
@@ -310,13 +339,16 @@ export function addTeamPlayers(formData) {
                     payload: response.data
                 });
                 dispatch(getAllTeams());
+                Swal.fire(getAlertToast('success', response.data));
             })
             .catch(error => {
                 if (error.response) {
+                    let { data } = error.response;
                     dispatch({
                         type: ADDTEAMPLAYERS_ERROR,
-                        payload: error.response.data
+                        payload: data
                     });
+                    Swal.fire(getAlertMessage('error', data.errorMessage));
                 }
             })
     };
@@ -396,13 +428,16 @@ export function addMatch(formData) {
                     payload: response.data
                 });
                 dispatch(getAllMatches());
+                Swal.fire(getAlertToast('success', 'New Match Added'));
             })
             .catch(error => {
                 if (error.response) {
+                    let { data } = error.response;
                     dispatch({
                         type: ADDMATCH_ERROR,
-                        payload: error.response.data
+                        payload: data
                     });
+                    Swal.fire(getAlertMessage('error', data.errorMessage));
                 }
             })
     };
@@ -417,13 +452,16 @@ export function addMatchRule(formData) {
                     payload: response.data
                 });
                 dispatch(getAllMatchRulesList());
+                Swal.fire(getAlertToast('success', 'New Match Rule Added'));
             })
             .catch(error => {
                 if (error.response) {
+                    let { data } = error.response;
                     dispatch({
                         type: ADDMATCHRULE_ERROR,
-                        payload: error.response.data
+                        payload: data
                     });
+                    Swal.fire(getAlertMessage('error', data.errorMessage));
                 }
             })
     };

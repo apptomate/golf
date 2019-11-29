@@ -2,6 +2,7 @@ import React, { Fragment, Component } from 'react';
 import { Modal, FormGroup, Radio, ControlLabel, FormControl, Checkbox, Button, Image } from "react-bootstrap";
 import { FieldGroup } from '../../_helpers/Functions';
 import DefaultUser from '../../assets/img/default_user.jpg';
+import PropTypes from 'prop-types';
 export default class AddUpdateUser extends Component {
     render() {
         const { userModalProps: { toggle, toggleFunc, handleFieldChange, firstName, lastName, dob, email, password, phoneNumber, address, pinCode, countryId,
@@ -35,6 +36,11 @@ export default class AddUpdateUser extends Component {
                                     </Button>
                                 }
                             </center>
+                            {/* <FormGroup controlId="formValidationError2" validationState="error">
+    <ControlLabel>Input with error and feedback icon</ControlLabel>
+    <FormControl type="text" />
+    <FormControl.Feedback />
+  </FormGroup> */}
                             <FieldGroup
                                 id="firstName" name="firstName" type="text" label="First Name" placeholder="First Name" required
                                 onChange={handleFieldChange} value={firstName} />
@@ -118,4 +124,8 @@ export default class AddUpdateUser extends Component {
             </Fragment>
         );
     }
+}
+//Prop Types
+AddUpdateUser.propTypes = {
+    userModalProps: PropTypes.object.isRequired
 }

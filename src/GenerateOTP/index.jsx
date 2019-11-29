@@ -5,6 +5,8 @@ import { Redirect, Link } from "react-router-dom";
 import logo from '../assets/img/reactlogo.png';
 import { generateEmailOTP } from '../_actions/Index';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import ResetPassword from '../ResetPassword/Index';
 class GenerateOTP extends Component {
     constructor(props) {
         super(props);
@@ -32,10 +34,10 @@ class GenerateOTP extends Component {
     }
     render() {
         const { email, otpSendTo, phoneNumber } = this.state;
-        const { emailOTP: { data: otpData = '' } } = this.props;
-        if (otpData) {
-            return <Redirect to={{ pathname: '/resetPassword', state: { otpSendTo, email, phoneNumber } }} />;
-        }
+        const { emailOTP } = this.props;
+        const otpGeneratedProps = {
+            otpSendTo, email, phoneNumber
+        };
         return (
             <div className='login-bg'>
                 <Row>
@@ -43,32 +45,38 @@ class GenerateOTP extends Component {
                         <img src={logo} alt='logo_image' />
                     </Col>
                     <Col className='login-form-center' md={3}>
-                        <form className="bg-white login-form-space" onSubmit={this.generateOTP}>
-                            <h3 className="login-title">Find your account</h3>
-                            <center>
-                                <FormGroup>
-                                    <ControlLabel>Send Code To</ControlLabel><br />
-                                    <Radio name="otpSendTo" value='email' inline onChange={this.handleFieldChange} checked={otpSendTo === 'email'}>
-                                        Email
+                        {(!emailOTP) ?
+
+                            (<form className="bg-white login-form-space" onSubmit={this.generateOTP}>
+                                <h3 className="login-title">Find your account</h3>
+                                <center>
+                                    <FormGroup>
+                                        <ControlLabel>Send Code To</ControlLabel><br />
+                                        <Radio name="otpSendTo" value='email' inline onChange={this.handleFieldChange} checked={otpSendTo === 'email'}>
+                                            Email
                                 </Radio>{' '}
-                                    <Radio name="otpSendTo" value='phoneNumber' inline onChange={this.handleFieldChange} checked={otpSendTo === 'phoneNumber'}>
-                                        SMS
+                                        <Radio name="otpSendTo" value='phoneNumber' inline onChange={this.handleFieldChange} checked={otpSendTo === 'phoneNumber'}>
+                                            SMS
                                 </Radio>{' '}
-                                </FormGroup>
-                            </center>
-                            {(otpSendTo === 'email') ?
-                                <FieldGroup
-                                    id="email" name="email" type="email" label="Email" placeholder="Email" required
-                                    onChange={this.handleFieldChange} value={email} />
-                                :
-                                <FieldGroup
-                                    id="phoneNumber" name="phoneNumber" type="text" label="Phone Number" placeholder="Phone Number" required
-                                    onChange={this.handleFieldChange} value={phoneNumber} />
-                            }
-                            <center>
-                                <Link to='/login'><Button bsStyle="default" >Cancel</Button></Link>{' '}
-                                <Button type='submit' bsStyle="primary" >Send OTP</Button></center>
-                        </form>
+                                    </FormGroup>
+                                </center>
+                                {(otpSendTo === 'email') ?
+                                    <FieldGroup
+                                        id="email" name="email" type="email" label="Email" placeholder="Email" required
+                                        onChange={this.handleFieldChange} value={email} />
+                                    :
+                                    <FieldGroup
+                                        id="phoneNumber" name="phoneNumber" type="text" label="Phone Number" placeholder="Phone Number" required
+                                        onChange={this.handleFieldChange} value={phoneNumber} />
+                                }
+                                <center>
+                                    <Link to='/login'><Button bsStyle="default" >Cancel</Button></Link>{' '}
+                                    <Button type='submit' bsStyle="primary" >Send OTP</Button></center>
+                            </form>)
+                            :
+                            (<ResetPassword otpGeneratedProps={otpGeneratedProps} />)
+                        }
+
                     </Col>
                     <Col className='login-form-center' md={1}></Col>
                 </Row>
@@ -76,9 +84,14 @@ class GenerateOTP extends Component {
         );
     };
 }
+
+//Prop Types
+GenerateOTP.propTypes = {
+    emailOTP: PropTypes.string
+};
 const getState = state => {
     return {
-        emailOTP: state.generateEmailOTP
+        emailOTP: state.generateEmailOTP.data
     }
 };
 export default connect(

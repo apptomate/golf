@@ -4,7 +4,9 @@ import { Button, Row, Col, } from "react-bootstrap";
 import { FieldGroup } from '../_helpers/Functions';
 import logo from '../assets/img/reactlogo.png';
 import { connect } from 'react-redux';
-import { authLogin, generateEmailOTP } from '../_actions/Index';
+import { authLogin } from '../_actions/Index';
+import PropTypes from 'prop-types';
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -29,8 +31,8 @@ class Login extends Component {
   };
   render() {
     const { email, password } = this.state;
-    let { userData: { data = {} } } = this.props;
-    if (data && data.token) {
+    let { userData } = this.props;
+    if (userData && userData.token) {
       return <Redirect to={{ pathname: '/' }} />;
     }
     return (
@@ -62,9 +64,14 @@ class Login extends Component {
     );
   }
 }
+//Prop Types
+Login.propTypes = {
+  userData: PropTypes.object
+};
+
 const getState = state => {
   return {
-    userData: state.authLogin
+    userData: state.authLogin.data
   }
 };
 export default connect(

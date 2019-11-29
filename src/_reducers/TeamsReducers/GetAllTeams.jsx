@@ -5,11 +5,11 @@ export function getAllTeams(state = arrayInitial, action) {
     const { type, payload } = action;
     switch (type) {
         case types.ALLTEAMS_LOADING:
-            return { data: payload, loading: true, error: false };
+            return { data: payload, loading: true };
         case types.ALLTEAMS_SUCCESS:
-            return { data: payload, loading: false, error: false };
+            return { data: payload, loading: false };
         case types.ALLTEAMS_ERROR:
-            return { data: payload, loading: false, error: true }
+            return { data: payload, loading: false }
         default:
             return state;
     }

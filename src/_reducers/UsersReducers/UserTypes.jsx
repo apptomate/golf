@@ -5,9 +5,9 @@ export function getAllUserTypes(state = arrayInitial, action) {
     const { type, payload } = action;
     switch (type) {
         case types.ALLUSERTYPES_SUCCESS:
-            return { data: payload, error: false };
+            return { data: payload };
         case types.ALLUSERTYPES_ERROR:
-            return { data: payload, error: true }
+            return { data: payload }
         default:
             return state;
     }
